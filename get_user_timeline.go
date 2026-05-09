@@ -4,10 +4,12 @@ package twitterapi
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"log/slog"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
@@ -29,9 +31,14 @@ type GetUserTimelineAuthorEntities struct {
 	URL         *GetUserTimelineURLs `json:"url"`
 }
 
+type GetUserTimelineProfileBioDescription struct {
+	URLs         []*GetUserTimelineURL     `json:"urls"`
+	UserMentions []*GetUserTimelineMention `json:"user_mentions"` // added: from live response
+}
+
 type GetUserTimelineProfileBioEntities struct {
-	Description *GetUserTimelineURLs `json:"description"`
-	URL         *GetUserTimelineURLs `json:"url"`
+	Description *GetUserTimelineProfileBioDescription `json:"description"` // fixed: was sharing URLs type
+	URL         *GetUserTimelineURLs                  `json:"url"`
 }
 
 type GetUserTimelineProfileBio struct {
@@ -39,7 +46,7 @@ type GetUserTimelineProfileBio struct {
 	Entities    *GetUserTimelineProfileBioEntities `json:"entities"`
 }
 
-type GetUserTimelineAffiliatesHighlightedLabel map[any]any
+type GetUserTimelineAffiliatesHighlightedLabel map[string]any
 
 type GetUserTimelineAuthor struct {
 	Type                       string                                     `json:"type"`
@@ -89,6 +96,7 @@ type GetUserTimelineSymbol struct {
 
 type GetUserTimelineMention struct {
 	IDStr      string `json:"id_str"`
+	Indices    []int  `json:"indices"` // added: from live response
 	Name       string `json:"name"`
 	ScreenName string `json:"screen_name"`
 }
@@ -131,10 +139,6 @@ type GetUserTimelineMediaResults struct {
 	Result *GetUserTimelineMediaResultsResult `json:"result"`
 }
 
-type GetUserTimelineAdditionalMediaInfo struct {
-	Monetizable bool `json:"monetizable"`
-}
-
 type GetUserTimelineFocusRect struct {
 	X int `json:"x"`
 	Y int `json:"y"`
@@ -170,7 +174,8 @@ type GetUserTimelineVideoInfo struct {
 }
 
 type GetUserTimelineExtendedEntitiesMedia struct {
-	AdditionalMediaInfo  *GetUserTimelineAdditionalMediaInfo  `json:"additional_media_info"`
+	AdditionalMediaInfo  json.RawMessage                      `json:"additional_media_info"` // polymorphic: see API docs
+	AllowDownloadStatus  json.RawMessage                      `json:"allow_download_status"` // added: from live response
 	DisplayURL           string                               `json:"display_url"`
 	ExpandedURL          string                               `json:"expanded_url"`
 	ExtMediaAvailability *GetUserTimelineExtMediaAvailability `json:"ext_media_availability"`
@@ -182,6 +187,8 @@ type GetUserTimelineExtendedEntitiesMedia struct {
 	MediaURLHTTPS        string                               `json:"media_url_https"`
 	OriginalInfo         *GetUserTimelineOriginalInfo         `json:"original_info"`
 	Sizes                *GetUserTimelineMediaSizes           `json:"sizes"`
+	SourceStatusIDStr    string                               `json:"source_status_id_str"` // added: from live response
+	SourceUserIDStr      string                               `json:"source_user_id_str"`   // added: from live response
 	Type                 string                               `json:"type"`
 	URL                  string                               `json:"url"`
 	VideoInfo            *GetUserTimelineVideoInfo            `json:"video_info"`
@@ -214,14 +221,14 @@ type GetUserTimelineTweet struct {
 	InReplyToUsername *string                          `json:"inReplyToUsername"`
 	Author            *GetUserTimelineAuthor           `json:"author"`
 	ExtendedEntities  *GetUserTimelineExtendedEntities `json:"extendedEntities"`
-	Card              *string                          `json:"card"`
+	Card              json.RawMessage                  `json:"card"` // polymorphic: see API docs
 	Place             map[string]any                   `json:"place"`
 	Entities          *GetUserTimelineTweetEntities    `json:"entities"`
 	QuotedTweet       *GetUserTimelineTweet            `json:"quoted_tweet"`
 	RetweetedTweet    *GetUserTimelineTweet            `json:"retweeted_tweet"`
 	IsLimitedReply    bool                             `json:"isLimitedReply"`
 	CommunityInfo     *string                          `json:"communityInfo"`
-	Article           *string                          `json:"article"`
+	Article           json.RawMessage                  `json:"article"` // polymorphic: see API docs
 }
 
 type GetUserTimelineData struct {
@@ -238,8 +245,8 @@ type GetUserTimelineResponse struct {
 }
 
 func (t *twitterApi) GetUserTimeline(userId string, includeReplies, includeParentTweet *bool, cursor *string) (*GetUserTimelineResponse, error) {
-	if userId == "" {
-		return nil, errors.New("userId is empty")
+	if strings.TrimSpace(userId) == "" {
+		return nil, errors.New("userId is required")
 	}
 
 	url := userTwitterDomainURI + "/tweet_timeline?userId=" + userId

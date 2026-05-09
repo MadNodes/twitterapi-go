@@ -4,10 +4,12 @@ package twitterapi
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"log/slog"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
@@ -52,7 +54,7 @@ type GetUserMentionsProfileBio struct {
 	Entities    *GetUserMentionsProfileBioEntities `json:"entities"`
 }
 
-type GetUserMentionsAffiliatesHighlightedLabel map[any]any
+type GetUserMentionsAffiliatesHighlightedLabel map[string]any
 
 type GetUserMentionsAuthor struct {
 	Type                       string                                     `json:"type"`
@@ -107,6 +109,7 @@ type GetUserMentionsTimestamp struct {
 
 type GetUserMentionsMention struct {
 	IDStr      string `json:"id_str"`
+	Indices    []int  `json:"indices"` // added: from live response
 	Name       string `json:"name"`
 	ScreenName string `json:"screen_name"`
 }
@@ -177,6 +180,7 @@ type GetUserMentionsMediaSizes struct {
 }
 
 type GetUserMentionsExtendedEntitiesMedia struct {
+	AdditionalMediaInfo  json.RawMessage                      `json:"additional_media_info"` // polymorphic: see API docs
 	AllowDownloadStatus  *GetUserMentionsAllowDownloadStatus  `json:"allow_download_status"`
 	DisplayURL           string                               `json:"display_url"`
 	ExpandedURL          string                               `json:"expanded_url"`
@@ -189,8 +193,11 @@ type GetUserMentionsExtendedEntitiesMedia struct {
 	MediaURLHTTPS        string                               `json:"media_url_https"`
 	OriginalInfo         *GetUserMentionsOriginalInfo         `json:"original_info"`
 	Sizes                *GetUserMentionsMediaSizes           `json:"sizes"`
+	SourceStatusIDStr    string                               `json:"source_status_id_str"` // added: from live response
+	SourceUserIDStr      string                               `json:"source_user_id_str"`   // added: from live response
 	Type                 string                               `json:"type"`
 	URL                  string                               `json:"url"`
+	VideoInfo            json.RawMessage                      `json:"video_info"` // polymorphic: see API docs
 }
 
 type GetUserMentionsExtendedEntities struct {
@@ -220,14 +227,14 @@ type GetUserMentionsTweet struct {
 	InReplyToUsername *string                          `json:"inReplyToUsername"`
 	Author            *GetUserMentionsAuthor           `json:"author"`
 	ExtendedEntities  *GetUserMentionsExtendedEntities `json:"extendedEntities"`
-	Card              *string                          `json:"card"`
+	Card              json.RawMessage                  `json:"card"` // polymorphic: see API docs
 	Place             map[string]any                   `json:"place"`
 	Entities          *GetUserMentionsTweetEntities    `json:"entities"`
 	QuotedTweet       *GetUserMentionsTweet            `json:"quoted_tweet"`
 	RetweetedTweet    *GetUserMentionsTweet            `json:"retweeted_tweet"`
 	IsLimitedReply    bool                             `json:"isLimitedReply"`
 	CommunityInfo     *string                          `json:"communityInfo"`
-	Article           *string                          `json:"article"`
+	Article           json.RawMessage                  `json:"article"` // polymorphic: see API docs
 }
 
 type GetUserMentionsResponse struct {
@@ -239,7 +246,7 @@ type GetUserMentionsResponse struct {
 }
 
 func (t *twitterApi) GetUserMentions(userName string, sinceTime, untilTime *int64, cursor *string) (*GetUserMentionsResponse, error) {
-	if userName == "" {
+	if strings.TrimSpace(userName) == "" {
 		return nil, errors.New("userName is required")
 	}
 

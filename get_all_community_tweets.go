@@ -13,7 +13,7 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
-type GetAllCommunityTweetsTweetAuthorAffiliatesHighlightedLabel map[any]any
+type GetAllCommunityTweetsTweetAuthorAffiliatesHighlightedLabel map[string]any
 
 type GetAllCommunityTweetsTweetAuthorProfileBioEntitiesDescriptionURL struct {
 	DisplayURL  string `json:"display_url"`
@@ -108,6 +108,7 @@ type GetAllCommunityTweetsTweet struct {
 	Type              string                              `json:"type"`
 	ID                string                              `json:"id"`
 	URL               string                              `json:"url"`
+	TwitterURL        string                              `json:"twitterUrl"` // added: missing from original
 	Text              string                              `json:"text"`
 	Source            string                              `json:"source"`
 	RetweetCount      int                                 `json:"retweetCount"`
@@ -135,13 +136,11 @@ type GetAllCommunityTweetsResponse struct {
 	Tweets      []*GetAllCommunityTweetsTweet `json:"tweets"`
 	HasNextPage bool                          `json:"has_next_page"`
 	NextCursor  string                        `json:"next_cursor"`
-	Status      string                        `json:"status"`
-	Message     string                        `json:"msg"`
 }
 
 func (t *twitterApi) GetAllCommunityTweets(query string, cursor *string) (*GetAllCommunityTweetsResponse, error) {
-	if query == "" {
-		return nil, errors.New("query is empty")
+	if strings.TrimSpace(query) == "" {
+		return nil, errors.New("query is required")
 	}
 
 	queryParts := []string{}
@@ -171,10 +170,6 @@ func (t *twitterApi) GetAllCommunityTweets(query string, cursor *string) (*GetAl
 	if err = jsoniter.Unmarshal(jsonData, &response); err != nil {
 		slog.Error("GetAllCommunityTweets failed", "err", err)
 		return nil, err
-	}
-	if response.Status != "success" {
-		slog.Error("GetAllCommunityTweets failed", "status", response.Status, "message", response.Message)
-		return nil, errors.New("GetAllCommunityTweets failed")
 	}
 
 	return response, nil

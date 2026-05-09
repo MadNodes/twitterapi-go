@@ -18,17 +18,34 @@ type GetTrendsTrendTarget struct {
 	Query string `json:"query"`
 }
 
-type GetTrendsTrend struct {
+type GetTrendsTrendInner struct {
 	Name            string                `json:"name"`
 	Target          *GetTrendsTrendTarget `json:"target"`
 	Rank            int                   `json:"rank"`
 	MetaDescription string                `json:"meta_description"`
 }
 
+type GetTrendsTrend struct {
+	Trend *GetTrendsTrendInner `json:"trend"` // fixed: each element wraps its trend in this key
+}
+
+type GetTrendsMetadataWoeid struct {
+	Name string `json:"name"`
+	ID   int    `json:"id"`
+}
+
+type GetTrendsMetadata struct {
+	Timestamp             int64                   `json:"timestamp"`
+	RefreshIntervalMillis int                     `json:"refresh_interval_millis"`
+	Woeid                 *GetTrendsMetadataWoeid `json:"woeid"`
+	ContextMode           string                  `json:"context_mode"`
+}
+
 type GetTrendsResponse struct {
-	Trends  []*GetTrendsTrend `json:"trends"`
-	Status  string            `json:"status"`
-	Message string            `json:"msg"`
+	Trends   []*GetTrendsTrend  `json:"trends"`
+	Status   string             `json:"status"`
+	Message  string             `json:"msg"`
+	Metadata *GetTrendsMetadata `json:"metadata"` // added: from live response
 }
 
 func (t *twitterApi) GetTrends(woeid int, count *int, the *string) (*GetTrendsResponse, error) {

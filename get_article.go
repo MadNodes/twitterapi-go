@@ -13,7 +13,7 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
-type GetArticleArticleAuthorAffiliatesHighlightedLabel map[any]any
+type GetArticleArticleAuthorAffiliatesHighlightedLabel map[string]any
 
 type GetArticleArticleAuthorProfileBioEntitiesDescriptionURL struct {
 	DisplayURL  string `json:"display_url"`
@@ -101,7 +101,7 @@ type GetArticleArticle struct {
 	ReplyCount       int                         `json:"replyCount"`
 	LikeCount        int                         `json:"likeCount"`
 	QuoteCount       int                         `json:"quoteCount"`
-	ViewCount        int                         `json:"viewCount"`
+	ViewCount        string                      `json:"viewCount"`
 	CreatedAt        string                      `json:"createdAt"`
 	Title            string                      `json:"title"`
 	PreviewText      string                      `json:"preview_text"`
@@ -112,12 +112,12 @@ type GetArticleArticle struct {
 type GetArticleResponse struct {
 	Article *GetArticleArticle `json:"article"`
 	Status  string             `json:"status"`
-	Message string             `json:"message"`
+	Message string             `json:"msg"` // fixed: was message
 }
 
 func (t *twitterApi) GetArticle(tweetID string) (*GetArticleResponse, error) {
-	if tweetID == "" {
-		return nil, errors.New("tweet_id is empty")
+	if strings.TrimSpace(tweetID) == "" {
+		return nil, errors.New("tweetID is required")
 	}
 
 	url := twitterDomainURI + "/article?" + strings.Join([]string{"tweet_id=" + tweetID}, "&")

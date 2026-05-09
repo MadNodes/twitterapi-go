@@ -24,7 +24,7 @@ type GetCommunityByIDCommunityInfoRule struct {
 	Description string `json:"description"`
 }
 
-type GetCommunityByIDCommunityInfoCreatorAffiliatesHighlightedLabel map[any]any
+type GetCommunityByIDCommunityInfoCreatorAffiliatesHighlightedLabel map[string]any
 
 type GetCommunityByIDCommunityInfoCreatorProfileBioEntitiesDescriptionURL struct {
 	DisplayURL  string `json:"display_url"`
@@ -91,7 +91,7 @@ type GetCommunityByIDCommunityInfoCreator struct {
 	ProfileBio                 *GetCommunityByIDCommunityInfoCreatorProfileBio                 `json:"profile_bio"`
 }
 
-type GetCommunityByIDCommunityInfoAdminAffiliatesHighlightedLabel map[any]any
+type GetCommunityByIDCommunityInfoAdminAffiliatesHighlightedLabel map[string]any
 
 type GetCommunityByIDCommunityInfoAdminProfileBioEntitiesDescriptionURL struct {
 	DisplayURL  string `json:"display_url"`
@@ -190,8 +190,8 @@ type GetCommunityByIDResponse struct {
 }
 
 func (t *twitterApi) GetCommunityByID(communityID string) (*GetCommunityByIDResponse, error) {
-	if communityID == "" {
-		return nil, errors.New("community_id is empty")
+	if strings.TrimSpace(communityID) == "" {
+		return nil, errors.New("communityID is required")
 	}
 
 	url := twitterDomainURI + "/community/info?" + strings.Join([]string{"community_id=" + communityID}, "&")

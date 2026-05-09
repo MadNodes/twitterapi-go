@@ -14,7 +14,7 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
-type GetTweetQuoteTweetAuthorAffiliatesHighlightedLabel map[any]any
+type GetTweetQuoteTweetAuthorAffiliatesHighlightedLabel map[string]any
 
 type GetTweetQuoteTweetAuthorProfileBioEntitiesDescriptionURL struct {
 	DisplayURL  string `json:"display_url"`
@@ -109,6 +109,7 @@ type GetTweetQuoteTweet struct {
 	Type              string                      `json:"type"`
 	ID                string                      `json:"id"`
 	URL               string                      `json:"url"`
+	TwitterURL        string                      `json:"twitterUrl"` // added: missing from original
 	Text              string                      `json:"text"`
 	Source            string                      `json:"source"`
 	RetweetCount      int                         `json:"retweetCount"`
@@ -137,12 +138,12 @@ type GetTweetQuoteResponse struct {
 	HasNextPage bool                  `json:"has_next_page"`
 	NextCursor  string                `json:"next_cursor"`
 	Status      string                `json:"status"`
-	Message     string                `json:"message"`
+	Message     string                `json:"msg"` // fixed: was message
 }
 
 func (t *twitterApi) GetTweetQuote(tweetID string, sinceTime *int, untilTime *int, includeReplies *bool, cursor *string) (*GetTweetQuoteResponse, error) {
-	if tweetID == "" {
-		return nil, errors.New("tweetId is empty")
+	if strings.TrimSpace(tweetID) == "" {
+		return nil, errors.New("tweetID is required")
 	}
 
 	queryParts := []string{}

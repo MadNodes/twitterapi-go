@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
@@ -37,7 +38,7 @@ type GetUserFollowingsUser struct {
 }
 
 type GetUserFollowingsResponse struct {
-	Followers   []*GetUserFollowingsUser `json:"followers"`
+	Followings  []*GetUserFollowingsUser `json:"followings"` // fixed: was followers
 	HasNextPage bool                     `json:"has_next_page"`
 	NextCursor  string                   `json:"next_cursor"`
 	Status      string                   `json:"status"`
@@ -46,8 +47,8 @@ type GetUserFollowingsResponse struct {
 }
 
 func (t *twitterApi) GetUserFollowings(userName string, pageSize *int, cursor *string) (*GetUserFollowingsResponse, error) {
-	if userName == "" {
-		return nil, errors.New("userName is empty")
+	if strings.TrimSpace(userName) == "" {
+		return nil, errors.New("userName is required")
 	}
 
 	url := userTwitterDomainURI + "/followings?userName=" + userName

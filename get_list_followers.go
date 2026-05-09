@@ -13,7 +13,7 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
-type GetListFollowersFollowerAffiliatesHighlightedLabel map[any]any
+type GetListFollowersFollowerAffiliatesHighlightedLabel map[string]any
 
 type GetListFollowersFollowerProfileBioEntitiesDescriptionURL struct {
 	DisplayURL  string `json:"display_url"`
@@ -89,8 +89,8 @@ type GetListFollowersResponse struct {
 }
 
 func (t *twitterApi) GetListFollowers(listID string, cursor *string) (*GetListFollowersResponse, error) {
-	if listID == "" {
-		return nil, errors.New("list_id is empty")
+	if strings.TrimSpace(listID) == "" {
+		return nil, errors.New("listID is required")
 	}
 
 	queryParts := []string{}

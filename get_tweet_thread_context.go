@@ -13,7 +13,7 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
-type GetTweetThreadContextReplyAuthorAffiliatesHighlightedLabel map[any]any
+type GetTweetThreadContextReplyAuthorAffiliatesHighlightedLabel map[string]any
 
 type GetTweetThreadContextReplyAuthorProfileBioEntitiesDescriptionURL struct {
 	DisplayURL  string `json:"display_url"`
@@ -108,6 +108,7 @@ type GetTweetThreadContextReply struct {
 	Type              string                              `json:"type"`
 	ID                string                              `json:"id"`
 	URL               string                              `json:"url"`
+	TwitterURL        string                              `json:"twitterUrl"` // added: missing from original
 	Text              string                              `json:"text"`
 	Source            string                              `json:"source"`
 	RetweetCount      int                                 `json:"retweetCount"`
@@ -132,16 +133,16 @@ type GetTweetThreadContextReply struct {
 }
 
 type GetTweetThreadContextResponse struct {
-	Replies     []*GetTweetThreadContextReply `json:"replies"`
+	Tweets      []*GetTweetThreadContextReply `json:"tweets"` // fixed: was replies
 	HasNextPage bool                          `json:"has_next_page"`
 	NextCursor  string                        `json:"next_cursor"`
 	Status      string                        `json:"status"`
-	Message     string                        `json:"message"`
+	Message     string                        `json:"msg"` // fixed: was message
 }
 
 func (t *twitterApi) GetTweetThreadContext(tweetID string, cursor *string) (*GetTweetThreadContextResponse, error) {
-	if tweetID == "" {
-		return nil, errors.New("tweetId is empty")
+	if strings.TrimSpace(tweetID) == "" {
+		return nil, errors.New("tweetID is required")
 	}
 
 	queryParts := []string{}

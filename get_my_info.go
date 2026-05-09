@@ -13,9 +13,8 @@ import (
 )
 
 type GetMyInfoResponse struct {
-	RechargeCredits int    `json:"recharge_credits"`
-	Status          string `json:"status"`
-	Message         string `json:"msg"`
+	RechargeCredits   int `json:"recharge_credits"`
+	TotalBonusCredits int `json:"total_bonus_credits"` // added: from live response
 }
 
 func (t *twitterApi) GetMyInfo() (*GetMyInfoResponse, error) {
@@ -38,10 +37,6 @@ func (t *twitterApi) GetMyInfo() (*GetMyInfoResponse, error) {
 	if err = jsoniter.Unmarshal(jsonData, &response); err != nil {
 		slog.Error("GetMyInfo failed", "err", err)
 		return nil, err
-	}
-	if response.Status != "success" {
-		slog.Error("GetMyInfo failed", "status", response.Status, "message", response.Message)
-		return nil, errors.New("GetMyInfo failed")
 	}
 
 	return response, nil

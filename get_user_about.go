@@ -68,16 +68,24 @@ type GetUserAboutDataIDentityProfileLabelsHighlightedLabel struct {
 	Label *GetUserAboutDataIDentityProfileLabelsHighlightedLabelLabel `json:"label"`
 }
 
+type GetUserAboutDataVerificationInfo struct {
+	ID                 string `json:"id"`
+	IsIdentityVerified bool   `json:"is_identity_verified"`
+}
+
 type GetUserAboutData struct {
 	ID                                    string                                                 `json:"id"`
 	Name                                  string                                                 `json:"name"`
 	UserName                              string                                                 `json:"userName"`
 	CreatedAt                             string                                                 `json:"createdAt"`
+	ProfilePicture                        string                                                 `json:"profilePicture"` // added: from live response
 	IsBlueVerified                        bool                                                   `json:"isBlueVerified"`
+	IsVerified                            bool                                                   `json:"isVerified"` // added: from live response
 	Protected                             bool                                                   `json:"protected"`
 	AffiliatesHighlightedLabel            *GetUserAboutDataAffiliatesHighlightedLabel            `json:"affiliates_highlighted_label"`
 	AboutProfile                          *GetUserAboutDataAboutProfile                          `json:"about_profile"`
 	IDentityProfileLabelsHighlightedLabel *GetUserAboutDataIDentityProfileLabelsHighlightedLabel `json:"identity_profile_labels_highlighted_label"`
+	VerificationInfo                      *GetUserAboutDataVerificationInfo                      `json:"verification_info"` // added: from live response
 }
 
 type GetUserAboutResponse struct {
@@ -87,10 +95,11 @@ type GetUserAboutResponse struct {
 }
 
 func (t *twitterApi) GetUserAbout(userName *string) (*GetUserAboutResponse, error) {
-	queryParts := []string{}
-	if userName != nil && *userName != "" {
-		queryParts = append(queryParts, "userName="+*userName)
+	if userName == nil || strings.TrimSpace(*userName) == "" {
+		return nil, errors.New("userName is required")
 	}
+	queryParts := []string{}
+	queryParts = append(queryParts, "userName="+*userName)
 	url := userTwitterDomainURI + "_about"
 	if len(queryParts) > 0 {
 		url += "?" + strings.Join(queryParts, "&")

@@ -33,7 +33,7 @@ type GetSpaceDetailDataStats struct {
 	TotalParticipants  int `json:"total_participants"`
 }
 
-type GetSpaceDetailDataCreatorAffiliatesHighlightedLabel map[any]any
+type GetSpaceDetailDataCreatorAffiliatesHighlightedLabel map[string]any
 
 type GetSpaceDetailDataCreator struct {
 	ID                         string                                               `json:"id"`
@@ -60,7 +60,7 @@ type GetSpaceDetailDataCreator struct {
 	AutomatedBy                string                                               `json:"automatedBy"`
 }
 
-type GetSpaceDetailDataParticipantsAdminAffiliatesHighlightedLabel map[any]any
+type GetSpaceDetailDataParticipantsAdminAffiliatesHighlightedLabel map[string]any
 
 type GetSpaceDetailDataParticipantsAdminParticipantInfo struct {
 	PeriscopeUserID string `json:"periscope_user_id"`
@@ -134,10 +134,11 @@ type GetSpaceDetailResponse struct {
 }
 
 func (t *twitterApi) GetSpaceDetail(spaceID *string) (*GetSpaceDetailResponse, error) {
-	queryParts := []string{}
-	if spaceID != nil && *spaceID != "" {
-		queryParts = append(queryParts, "space_id="+*spaceID)
+	if spaceID == nil || strings.TrimSpace(*spaceID) == "" {
+		return nil, errors.New("spaceID is required")
 	}
+	queryParts := []string{}
+	queryParts = append(queryParts, "space_id="+*spaceID)
 	url := twitterDomainURI + "/spaces/detail"
 	if len(queryParts) > 0 {
 		url += "?" + strings.Join(queryParts, "&")

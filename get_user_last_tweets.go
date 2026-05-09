@@ -4,10 +4,12 @@ package twitterapi
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"log/slog"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
@@ -51,7 +53,7 @@ type GetUserLastTweetsProfileBio struct {
 	Entities    *GetUserLastTweetsProfileBioEntities `json:"entities"`
 }
 
-type GetUserLastTweetsAffiliatesHighlightedLabel map[any]any
+type GetUserLastTweetsAffiliatesHighlightedLabel map[string]any
 
 type GetUserLastTweetsAuthor struct {
 	Type                       string                                       `json:"type"`
@@ -106,6 +108,7 @@ type GetUserLastTweetsTimestamp struct {
 
 type GetUserLastTweetsMention struct {
 	IDStr      string `json:"id_str"`
+	Indices    []int  `json:"indices"` // added: from live response
 	Name       string `json:"name"`
 	ScreenName string `json:"screen_name"`
 }
@@ -176,6 +179,7 @@ type GetUserLastTweetsMediaSizes struct {
 }
 
 type GetUserLastTweetsExtendedEntitiesMedia struct {
+	AdditionalMediaInfo  json.RawMessage                        `json:"additional_media_info"` // polymorphic: see API docs
 	AllowDownloadStatus  *GetUserLastTweetsAllowDownloadStatus  `json:"allow_download_status"`
 	DisplayURL           string                                 `json:"display_url"`
 	ExpandedURL          string                                 `json:"expanded_url"`
@@ -188,8 +192,11 @@ type GetUserLastTweetsExtendedEntitiesMedia struct {
 	MediaURLHTTPS        string                                 `json:"media_url_https"`
 	OriginalInfo         *GetUserLastTweetsOriginalInfo         `json:"original_info"`
 	Sizes                *GetUserLastTweetsMediaSizes           `json:"sizes"`
+	SourceStatusIDStr    string                                 `json:"source_status_id_str"` // added: from live response
+	SourceUserIDStr      string                                 `json:"source_user_id_str"`   // added: from live response
 	Type                 string                                 `json:"type"`
 	URL                  string                                 `json:"url"`
+	VideoInfo            json.RawMessage                        `json:"video_info"` // polymorphic: see API docs
 }
 
 type GetUserLastTweetsExtendedEntities struct {
@@ -219,14 +226,14 @@ type GetUserLastTweetsTweet struct {
 	InReplyToUsername *string                            `json:"inReplyToUsername"`
 	Author            *GetUserLastTweetsAuthor           `json:"author"`
 	ExtendedEntities  *GetUserLastTweetsExtendedEntities `json:"extendedEntities"`
-	Card              *string                            `json:"card"`
+	Card              json.RawMessage                    `json:"card"` // polymorphic: see API docs
 	Place             map[string]any                     `json:"place"`
 	Entities          *GetUserLastTweetsTweetEntities    `json:"entities"`
 	QuotedTweet       *GetUserLastTweetsTweet            `json:"quoted_tweet"`
 	RetweetedTweet    *GetUserLastTweetsTweet            `json:"retweeted_tweet"`
 	IsLimitedReply    bool                               `json:"isLimitedReply"`
 	CommunityInfo     *string                            `json:"communityInfo"`
-	Article           *string                            `json:"article"`
+	Article           json.RawMessage                    `json:"article"` // polymorphic: see API docs
 }
 
 type GetUserLastTweetsData struct {
@@ -244,7 +251,7 @@ type GetUserLastTweetsResponse struct {
 }
 
 func (t *twitterApi) GetUserLastTweets(userId, userName *string, includeReplies *bool, cursor *string) (*GetUserLastTweetsResponse, error) {
-	if (userId == nil || *userId == "") && (userName == nil || *userName == "") {
+	if (userId == nil || strings.TrimSpace(*userId) == "") && (userName == nil || strings.TrimSpace(*userName) == "") {
 		return nil, errors.New("userId or userName is required")
 	}
 

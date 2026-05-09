@@ -13,7 +13,7 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
-type GetTweetByIDsTweetAuthorAffiliatesHighlightedLabel map[any]any
+type GetTweetByIDsTweetAuthorAffiliatesHighlightedLabel map[string]any
 
 type GetTweetByIDsTweetAuthorProfileBioEntitiesDescriptionURL struct {
 	DisplayURL  string `json:"display_url"`
@@ -108,6 +108,7 @@ type GetTweetByIDsTweet struct {
 	Type              string                      `json:"type"`
 	ID                string                      `json:"id"`
 	URL               string                      `json:"url"`
+	TwitterURL        string                      `json:"twitterUrl"` // added: missing from original
 	Text              string                      `json:"text"`
 	Source            string                      `json:"source"`
 	RetweetCount      int                         `json:"retweetCount"`
@@ -134,7 +135,8 @@ type GetTweetByIDsTweet struct {
 type GetTweetByIDsResponse struct {
 	Tweets  []*GetTweetByIDsTweet `json:"tweets"`
 	Status  string                `json:"status"`
-	Message string                `json:"message"`
+	Message string                `json:"msg"` // fixed: was message
+	Code    int                   `json:"code"`
 }
 
 func (t *twitterApi) GetTweetByIDs(tweetIDs []string) (*GetTweetByIDsResponse, error) {

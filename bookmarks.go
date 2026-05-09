@@ -59,7 +59,7 @@ type BookmarksTweetEntities struct {
 	UserMentions []*BookmarksTweetUserMention `json:"user_mentions"`
 }
 
-type BookmarksTweetAffiliatesHighlightedLabel map[any]any
+type BookmarksTweetAffiliatesHighlightedLabel map[string]any
 
 type BookmarksTweetAuthor struct {
 	Type                       string                                    `json:"type"`

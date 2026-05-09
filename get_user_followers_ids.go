@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
@@ -23,7 +24,7 @@ type GetUserFollowersIDsResponse struct {
 }
 
 func (t *twitterApi) GetUserFollowersIDs(userName, userId *string, count *int, cursor *string) (*GetUserFollowersIDsResponse, error) {
-	if (userName == nil || *userName == "") && (userId == nil || *userId == "") {
+	if (userName == nil || strings.TrimSpace(*userName) == "") && (userId == nil || strings.TrimSpace(*userId) == "") {
 		return nil, errors.New("userName or userId is required")
 	}
 

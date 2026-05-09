@@ -13,7 +13,7 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
-type TweetAdvancedSearchTweetAuthorAffiliatesHighlightedLabel map[any]any
+type TweetAdvancedSearchTweetAuthorAffiliatesHighlightedLabel map[string]any
 
 type TweetAdvancedSearchTweetAuthorProfileBioEntitiesDescriptionURL struct {
 	DisplayURL  string `json:"display_url"`
@@ -108,6 +108,7 @@ type TweetAdvancedSearchTweet struct {
 	Type              string                            `json:"type"`
 	ID                string                            `json:"id"`
 	URL               string                            `json:"url"`
+	TwitterURL        string                            `json:"twitterUrl"` // added: missing from original
 	Text              string                            `json:"text"`
 	Source            string                            `json:"source"`
 	RetweetCount      int                               `json:"retweetCount"`
@@ -135,13 +136,11 @@ type TweetAdvancedSearchResponse struct {
 	Tweets      []*TweetAdvancedSearchTweet `json:"tweets"`
 	HasNextPage bool                        `json:"has_next_page"`
 	NextCursor  string                      `json:"next_cursor"`
-	Status      string                      `json:"status"`
-	Message     string                      `json:"msg"`
 }
 
 func (t *twitterApi) TweetAdvancedSearch(query string, cursor *string) (*TweetAdvancedSearchResponse, error) {
-	if query == "" {
-		return nil, errors.New("query is empty")
+	if strings.TrimSpace(query) == "" {
+		return nil, errors.New("query is required")
 	}
 
 	queryParts := []string{}
@@ -171,10 +170,6 @@ func (t *twitterApi) TweetAdvancedSearch(query string, cursor *string) (*TweetAd
 	if err = jsoniter.Unmarshal(jsonData, &response); err != nil {
 		slog.Error("TweetAdvancedSearch failed", "err", err)
 		return nil, err
-	}
-	if response.Status != "success" {
-		slog.Error("TweetAdvancedSearch failed", "status", response.Status, "message", response.Message)
-		return nil, errors.New("TweetAdvancedSearch failed")
 	}
 
 	return response, nil

@@ -13,7 +13,7 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
-type GetCommunityMembersMemberAffiliatesHighlightedLabel map[any]any
+type GetCommunityMembersMemberAffiliatesHighlightedLabel map[string]any
 
 type GetCommunityMembersMemberProfileBioEntitiesDescriptionURL struct {
 	DisplayURL  string `json:"display_url"`
@@ -82,6 +82,7 @@ type GetCommunityMembersMember struct {
 
 type GetCommunityMembersResponse struct {
 	Members     []*GetCommunityMembersMember `json:"members"`
+	HasNext     bool                         `json:"has_next"` // added: from live response
 	HasNextPage bool                         `json:"has_next_page"`
 	NextCursor  string                       `json:"next_cursor"`
 	Status      string                       `json:"status"`
@@ -89,8 +90,8 @@ type GetCommunityMembersResponse struct {
 }
 
 func (t *twitterApi) GetCommunityMembers(communityID string, cursor *string) (*GetCommunityMembersResponse, error) {
-	if communityID == "" {
-		return nil, errors.New("community_id is empty")
+	if strings.TrimSpace(communityID) == "" {
+		return nil, errors.New("communityID is required")
 	}
 
 	queryParts := []string{}

@@ -13,7 +13,7 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
-type ListTimelineTweetAuthorAffiliatesHighlightedLabel map[any]any
+type ListTimelineTweetAuthorAffiliatesHighlightedLabel map[string]any
 
 type ListTimelineTweetAuthorProfileBioEntitiesDescriptionURL struct {
 	DisplayURL  string `json:"display_url"`
@@ -108,6 +108,7 @@ type ListTimelineTweet struct {
 	Type              string                     `json:"type"`
 	ID                string                     `json:"id"`
 	URL               string                     `json:"url"`
+	TwitterURL        string                     `json:"twitterUrl"` // added: missing from original
 	Text              string                     `json:"text"`
 	Source            string                     `json:"source"`
 	RetweetCount      int                        `json:"retweetCount"`
@@ -140,8 +141,8 @@ type ListTimelineResponse struct {
 }
 
 func (t *twitterApi) GetListTimeline(listID string, cursor *string) (*ListTimelineResponse, error) {
-	if listID == "" {
-		return nil, errors.New("listId is empty")
+	if strings.TrimSpace(listID) == "" {
+		return nil, errors.New("listID is required")
 	}
 
 	queryParts := []string{}

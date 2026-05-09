@@ -7,6 +7,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"strings"
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
@@ -24,10 +25,10 @@ type CheckFollowRelationshipResponse struct {
 }
 
 func (t *twitterApi) CheckFollowRelationship(sourceUserName, targetUserName string) (*CheckFollowRelationshipResponse, error) {
-	if sourceUserName == "" {
+	if strings.TrimSpace(sourceUserName) == "" {
 		return nil, errors.New("sourceUserName is required")
 	}
-	if targetUserName == "" {
+	if strings.TrimSpace(targetUserName) == "" {
 		return nil, errors.New("targetUserName is required")
 	}
 

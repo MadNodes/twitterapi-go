@@ -7,6 +7,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"strings"
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
@@ -19,16 +20,28 @@ type GetUserInfoURL struct {
 	URL         string `json:"url"`
 }
 
-type GetUserInfoURLs struct {
+type GetUserInfoUserMention struct {
+	IDStr      string `json:"id_str"`
+	Indices    []int  `json:"indices"`
+	Name       string `json:"name"`
+	ScreenName string `json:"screen_name"`
+}
+
+type GetUserInfoDescriptionEntities struct {
+	URLs         []*GetUserInfoURL         `json:"urls"`
+	UserMentions []*GetUserInfoUserMention `json:"user_mentions"` // added: from live response
+}
+
+type GetUserInfoURLEntities struct {
 	URLs []*GetUserInfoURL `json:"urls"`
 }
 
 type GetUserInfoEntities struct {
-	Description *GetUserInfoURLs `json:"description"`
-	URL         *GetUserInfoURLs `json:"url"`
+	Description *GetUserInfoDescriptionEntities `json:"description"`
+	URL         *GetUserInfoURLEntities         `json:"url"`
 }
 
-type GetUserInfoAffiliatesHighlightedLabel map[any]any
+type GetUserInfoAffiliatesHighlightedLabel map[string]any
 
 type GetUserInfoUser struct {
 	ID                         string                                 `json:"id"`
@@ -64,8 +77,8 @@ type GetUserInfoResponse struct {
 }
 
 func (t *twitterApi) GetUserInfo(userName string) (*GetUserInfoResponse, error) {
-	if userName == "" {
-		return nil, errors.New("userName is empty")
+	if strings.TrimSpace(userName) == "" {
+		return nil, errors.New("userName is required")
 	}
 
 	url := userTwitterDomainURI + "/info?userName=" + userName
