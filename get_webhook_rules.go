@@ -27,11 +27,17 @@ type GetWebhookRulesResponse struct {
 
 // GetWebhookRules
 func (t *twitterApi) GetWebhookRules() (*GetWebhookRulesResponse, error) {
+	url := tweetFilterDomainURI + "/get_rules"
+
 	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*10)
 	defer cancel1()
 
-	jsonData, resp, err := getDataWithHeader(ctx1, t.httpClient, tweetFilterDomainURI+"/get_rules", t.headers)
+	jsonData, resp, err := getDataWithHeader(ctx1, t.httpClient, url, t.headers)
 	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			slog.Error("GetWebhookRules request timed out", "url", url)
+			return nil, errors.New("GetWebhookRules request timed out")
+		}
 		slog.Error("GetWebhookRules failed", "err", err)
 		return nil, err
 	}
@@ -49,7 +55,7 @@ func (t *twitterApi) GetWebhookRules() (*GetWebhookRulesResponse, error) {
 	}
 	if response.Status != "success" {
 		slog.Error("GetWebhookRules failed", "status", response.Status, "message", response.Message)
-		return nil, errors.New("GetWebhookRules failed")
+		return nil, errors.New(response.Message)
 	}
 
 	return response, nil

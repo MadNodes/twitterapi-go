@@ -7,6 +7,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	neturl "net/url"
 	"strings"
 	"time"
 
@@ -194,13 +195,19 @@ func (t *twitterApi) GetCommunityByID(communityID string) (*GetCommunityByIDResp
 		return nil, errors.New("communityID is required")
 	}
 
-	url := twitterDomainURI + "/community/info?" + strings.Join([]string{"community_id=" + communityID}, "&")
+	vals := neturl.Values{}
+	vals.Set("community_id", communityID)
+	url := twitterDomainURI + "/community/info?" + vals.Encode()
 
 	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*10)
 	defer cancel1()
 
 	jsonData, resp, err := getDataWithHeader(ctx1, t.httpClient, url, t.headers)
 	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			slog.Error("GetCommunityByID request timed out", "url", url)
+			return nil, errors.New("GetCommunityByID request timed out")
+		}
 		slog.Error("GetCommunityByID failed", "err", err)
 		return nil, err
 	}
@@ -216,7 +223,7 @@ func (t *twitterApi) GetCommunityByID(communityID string) (*GetCommunityByIDResp
 	}
 	if response.Status != "success" {
 		slog.Error("GetCommunityByID failed", "status", response.Status, "message", response.Message)
-		return nil, errors.New("GetCommunityByID failed")
+		return nil, errors.New(response.Message)
 	}
 
 	return response, nil

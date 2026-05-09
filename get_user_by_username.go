@@ -7,6 +7,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	neturl "net/url"
 	"strings"
 	"time"
 
@@ -81,13 +82,19 @@ func (t *twitterApi) GetUserInfo(userName string) (*GetUserInfoResponse, error) 
 		return nil, errors.New("userName is required")
 	}
 
-	url := userTwitterDomainURI + "/info?userName=" + userName
+	vals := neturl.Values{}
+	vals.Set("userName", userName)
+	url := userTwitterDomainURI + "/info?" + vals.Encode()
 
 	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*10)
 	defer cancel1()
 
 	jsonData, resp, err := getDataWithHeader(ctx1, t.httpClient, url, t.headers)
 	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			slog.Error("GetUserInfo request timed out", "url", url)
+			return nil, errors.New("GetUserInfo request timed out")
+		}
 		slog.Error("GetUserInfo failed", "err", err)
 		return nil, err
 	}
@@ -103,7 +110,7 @@ func (t *twitterApi) GetUserInfo(userName string) (*GetUserInfoResponse, error) 
 	}
 	if response.Status != "success" {
 		slog.Error("GetUserInfo failed", "status", response.Status, "message", response.Message)
-		return nil, errors.New("GetUserInfo failed")
+		return nil, errors.New(response.Message)
 	}
 
 	return response, nil

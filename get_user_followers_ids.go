@@ -7,6 +7,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	neturl "net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -28,24 +29,29 @@ func (t *twitterApi) GetUserFollowersIDs(userName, userId *string, count *int, c
 		return nil, errors.New("userName or userId is required")
 	}
 
-	url := userTwitterDomainURI + "/followers_ids?"
+	vals := neturl.Values{}
 	if userName != nil && *userName != "" {
-		url += "userName=" + *userName
+		vals.Set("userName", *userName)
 	} else {
-		url += "userId=" + *userId
+		vals.Set("userId", *userId)
 	}
 	if count != nil {
-		url += "&count=" + strconv.Itoa(*count)
+		vals.Set("count", strconv.Itoa(*count))
 	}
 	if cursor != nil && *cursor != "" {
-		url += "&cursor=" + *cursor
+		vals.Set("cursor", *cursor)
 	}
+	url := userTwitterDomainURI + "/followers_ids?" + vals.Encode()
 
 	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*10)
 	defer cancel1()
 
 	jsonData, resp, err := getDataWithHeader(ctx1, t.httpClient, url, t.headers)
 	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			slog.Error("GetUserFollowersIDs request timed out", "url", url)
+			return nil, errors.New("GetUserFollowersIDs request timed out")
+		}
 		slog.Error("GetUserFollowersIDs failed", "err", err)
 		return nil, err
 	}
@@ -61,7 +67,7 @@ func (t *twitterApi) GetUserFollowersIDs(userName, userId *string, count *int, c
 	}
 	if response.Status != "success" {
 		slog.Error("GetUserFollowersIDs failed", "status", response.Status, "message", response.Message)
-		return nil, errors.New("GetUserFollowersIDs failed")
+		return nil, errors.New(response.Message)
 	}
 
 	return response, nil

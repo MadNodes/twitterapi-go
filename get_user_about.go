@@ -7,6 +7,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	neturl "net/url"
 	"strings"
 	"time"
 
@@ -98,18 +99,20 @@ func (t *twitterApi) GetUserAbout(userName *string) (*GetUserAboutResponse, erro
 	if userName == nil || strings.TrimSpace(*userName) == "" {
 		return nil, errors.New("userName is required")
 	}
-	queryParts := []string{}
-	queryParts = append(queryParts, "userName="+*userName)
-	url := userTwitterDomainURI + "_about"
-	if len(queryParts) > 0 {
-		url += "?" + strings.Join(queryParts, "&")
-	}
+
+	vals := neturl.Values{}
+	vals.Set("userName", *userName)
+	url := userTwitterDomainURI + "_about?" + vals.Encode()
 
 	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*10)
 	defer cancel1()
 
 	jsonData, resp, err := getDataWithHeader(ctx1, t.httpClient, url, t.headers)
 	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			slog.Error("GetUserAbout request timed out", "url", url)
+			return nil, errors.New("GetUserAbout request timed out")
+		}
 		slog.Error("GetUserAbout failed", "err", err)
 		return nil, err
 	}
@@ -125,7 +128,7 @@ func (t *twitterApi) GetUserAbout(userName *string) (*GetUserAboutResponse, erro
 	}
 	if response.Status != "success" {
 		slog.Error("GetUserAbout failed", "status", response.Status, "message", response.Message)
-		return nil, errors.New("GetUserAbout failed")
+		return nil, errors.New(response.Message)
 	}
 
 	return response, nil

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	neturl "net/url"
 	"strings"
 	"time"
 
@@ -94,21 +95,22 @@ func (t *twitterApi) GetCommunityMembers(communityID string, cursor *string) (*G
 		return nil, errors.New("communityID is required")
 	}
 
-	queryParts := []string{}
-	queryParts = append(queryParts, "community_id="+communityID)
+	vals := neturl.Values{}
+	vals.Set("community_id", communityID)
 	if cursor != nil && *cursor != "" {
-		queryParts = append(queryParts, "cursor="+*cursor)
+		vals.Set("cursor", *cursor)
 	}
-	url := twitterDomainURI + "/community/members"
-	if len(queryParts) > 0 {
-		url += "?" + strings.Join(queryParts, "&")
-	}
+	url := twitterDomainURI + "/community/members?" + vals.Encode()
 
 	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*10)
 	defer cancel1()
 
 	jsonData, resp, err := getDataWithHeader(ctx1, t.httpClient, url, t.headers)
 	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			slog.Error("GetCommunityMembers request timed out", "url", url)
+			return nil, errors.New("GetCommunityMembers request timed out")
+		}
 		slog.Error("GetCommunityMembers failed", "err", err)
 		return nil, err
 	}
@@ -124,7 +126,7 @@ func (t *twitterApi) GetCommunityMembers(communityID string, cursor *string) (*G
 	}
 	if response.Status != "success" {
 		slog.Error("GetCommunityMembers failed", "status", response.Status, "message", response.Message)
-		return nil, errors.New("GetCommunityMembers failed")
+		return nil, errors.New(response.Message)
 	}
 
 	return response, nil

@@ -7,8 +7,8 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	neturl "net/url"
 	"strconv"
-	"strings"
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
@@ -53,24 +53,25 @@ func (t *twitterApi) GetTrends(woeid int, count *int, the *string) (*GetTrendsRe
 		return nil, errors.New("woeid is empty")
 	}
 
-	queryParts := []string{}
-	queryParts = append(queryParts, "woeid="+strconv.Itoa(woeid))
+	vals := neturl.Values{}
+	vals.Set("woeid", strconv.Itoa(woeid))
 	if count != nil {
-		queryParts = append(queryParts, "count="+strconv.Itoa(*count))
+		vals.Set("count", strconv.Itoa(*count))
 	}
 	if the != nil && *the != "" {
-		queryParts = append(queryParts, "The="+*the)
+		vals.Set("The", *the)
 	}
-	url := twitterDomainURI + "/trends"
-	if len(queryParts) > 0 {
-		url += "?" + strings.Join(queryParts, "&")
-	}
+	url := twitterDomainURI + "/trends?" + vals.Encode()
 
 	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*10)
 	defer cancel1()
 
 	jsonData, resp, err := getDataWithHeader(ctx1, t.httpClient, url, t.headers)
 	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			slog.Error("GetTrends request timed out", "url", url)
+			return nil, errors.New("GetTrends request timed out")
+		}
 		slog.Error("GetTrends failed", "err", err)
 		return nil, err
 	}
@@ -86,7 +87,7 @@ func (t *twitterApi) GetTrends(woeid int, count *int, the *string) (*GetTrendsRe
 	}
 	if response.Status != "success" {
 		slog.Error("GetTrends failed", "status", response.Status, "message", response.Message)
-		return nil, errors.New("GetTrends failed")
+		return nil, errors.New(response.Message)
 	}
 
 	return response, nil

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	neturl "net/url"
 	"strings"
 	"time"
 
@@ -137,18 +138,20 @@ func (t *twitterApi) GetSpaceDetail(spaceID *string) (*GetSpaceDetailResponse, e
 	if spaceID == nil || strings.TrimSpace(*spaceID) == "" {
 		return nil, errors.New("spaceID is required")
 	}
-	queryParts := []string{}
-	queryParts = append(queryParts, "space_id="+*spaceID)
-	url := twitterDomainURI + "/spaces/detail"
-	if len(queryParts) > 0 {
-		url += "?" + strings.Join(queryParts, "&")
-	}
+
+	vals := neturl.Values{}
+	vals.Set("space_id", *spaceID)
+	url := twitterDomainURI + "/spaces/detail?" + vals.Encode()
 
 	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*10)
 	defer cancel1()
 
 	jsonData, resp, err := getDataWithHeader(ctx1, t.httpClient, url, t.headers)
 	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			slog.Error("GetSpaceDetail request timed out", "url", url)
+			return nil, errors.New("GetSpaceDetail request timed out")
+		}
 		slog.Error("GetSpaceDetail failed", "err", err)
 		return nil, err
 	}
@@ -164,7 +167,7 @@ func (t *twitterApi) GetSpaceDetail(spaceID *string) (*GetSpaceDetailResponse, e
 	}
 	if response.Status != "success" {
 		slog.Error("GetSpaceDetail failed", "status", response.Status, "message", response.Message)
-		return nil, errors.New("GetSpaceDetail failed")
+		return nil, errors.New(response.Message)
 	}
 
 	return response, nil

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	neturl "net/url"
 	"strings"
 	"time"
 
@@ -93,21 +94,22 @@ func (t *twitterApi) GetListFollowers(listID string, cursor *string) (*GetListFo
 		return nil, errors.New("listID is required")
 	}
 
-	queryParts := []string{}
-	queryParts = append(queryParts, "list_id="+listID)
+	vals := neturl.Values{}
+	vals.Set("list_id", listID)
 	if cursor != nil && *cursor != "" {
-		queryParts = append(queryParts, "cursor="+*cursor)
+		vals.Set("cursor", *cursor)
 	}
-	url := listTwitterDomainURI + "/followers"
-	if len(queryParts) > 0 {
-		url += "?" + strings.Join(queryParts, "&")
-	}
+	url := listTwitterDomainURI + "/followers?" + vals.Encode()
 
 	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*10)
 	defer cancel1()
 
 	jsonData, resp, err := getDataWithHeader(ctx1, t.httpClient, url, t.headers)
 	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			slog.Error("GetListFollowers request timed out", "url", url)
+			return nil, errors.New("GetListFollowers request timed out")
+		}
 		slog.Error("GetListFollowers failed", "err", err)
 		return nil, err
 	}
@@ -123,7 +125,7 @@ func (t *twitterApi) GetListFollowers(listID string, cursor *string) (*GetListFo
 	}
 	if response.Status != "success" {
 		slog.Error("GetListFollowers failed", "status", response.Status, "message", response.Message)
-		return nil, errors.New("GetListFollowers failed")
+		return nil, errors.New(response.Message)
 	}
 
 	return response, nil

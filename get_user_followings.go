@@ -7,6 +7,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	neturl "net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -51,19 +52,25 @@ func (t *twitterApi) GetUserFollowings(userName string, pageSize *int, cursor *s
 		return nil, errors.New("userName is required")
 	}
 
-	url := userTwitterDomainURI + "/followings?userName=" + userName
+	vals := neturl.Values{}
+	vals.Set("userName", userName)
 	if pageSize != nil {
-		url += "&pageSize=" + strconv.Itoa(*pageSize)
+		vals.Set("pageSize", strconv.Itoa(*pageSize))
 	}
 	if cursor != nil && *cursor != "" {
-		url += "&cursor=" + *cursor
+		vals.Set("cursor", *cursor)
 	}
+	url := userTwitterDomainURI + "/followings?" + vals.Encode()
 
 	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*10)
 	defer cancel1()
 
 	jsonData, resp, err := getDataWithHeader(ctx1, t.httpClient, url, t.headers)
 	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			slog.Error("GetUserFollowings request timed out", "url", url)
+			return nil, errors.New("GetUserFollowings request timed out")
+		}
 		slog.Error("GetUserFollowings failed", "err", err)
 		return nil, err
 	}
@@ -79,7 +86,7 @@ func (t *twitterApi) GetUserFollowings(userName string, pageSize *int, cursor *s
 	}
 	if response.Status != "success" {
 		slog.Error("GetUserFollowings failed", "status", response.Status, "message", response.Message)
-		return nil, errors.New("GetUserFollowings failed")
+		return nil, errors.New(response.Message)
 	}
 
 	return response, nil

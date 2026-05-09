@@ -8,6 +8,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	neturl "net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -255,24 +256,29 @@ func (t *twitterApi) GetUserLastTweets(userId, userName *string, includeReplies 
 		return nil, errors.New("userId or userName is required")
 	}
 
-	url := userTwitterDomainURI + "/last_tweets?"
+	vals := neturl.Values{}
 	if userId != nil && *userId != "" {
-		url += "userId=" + *userId
+		vals.Set("userId", *userId)
 	} else {
-		url += "userName=" + *userName
+		vals.Set("userName", *userName)
 	}
 	if includeReplies != nil {
-		url += "&includeReplies=" + strconv.FormatBool(*includeReplies)
+		vals.Set("includeReplies", strconv.FormatBool(*includeReplies))
 	}
 	if cursor != nil && *cursor != "" {
-		url += "&cursor=" + *cursor
+		vals.Set("cursor", *cursor)
 	}
+	url := userTwitterDomainURI + "/last_tweets?" + vals.Encode()
 
 	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*10)
 	defer cancel1()
 
 	jsonData, resp, err := getDataWithHeader(ctx1, t.httpClient, url, t.headers)
 	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			slog.Error("GetUserLastTweets request timed out", "url", url)
+			return nil, errors.New("GetUserLastTweets request timed out")
+		}
 		slog.Error("GetUserLastTweets failed", "err", err)
 		return nil, err
 	}
@@ -288,7 +294,7 @@ func (t *twitterApi) GetUserLastTweets(userId, userName *string, includeReplies 
 	}
 	if response.Status != "success" {
 		slog.Error("GetUserLastTweets failed", "status", response.Status, "message", response.Message)
-		return nil, errors.New("GetUserLastTweets failed")
+		return nil, errors.New(response.Message)
 	}
 
 	return response, nil

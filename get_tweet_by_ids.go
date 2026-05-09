@@ -7,6 +7,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	neturl "net/url"
 	"strings"
 	"time"
 
@@ -144,13 +145,19 @@ func (t *twitterApi) GetTweetByIDs(tweetIDs []string) (*GetTweetByIDsResponse, e
 		return nil, errors.New("tweet_ids is empty")
 	}
 
-	url := tweetsTwitterDomainURI + "?" + strings.Join([]string{"tweet_ids=" + strings.Join(tweetIDs, ",")}, "&")
+	vals := neturl.Values{}
+	vals.Set("tweet_ids", strings.Join(tweetIDs, ","))
+	url := tweetsTwitterDomainURI + "?" + vals.Encode()
 
 	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*10)
 	defer cancel1()
 
 	jsonData, resp, err := getDataWithHeader(ctx1, t.httpClient, url, t.headers)
 	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			slog.Error("GetTweetByIDs request timed out", "url", url)
+			return nil, errors.New("GetTweetByIDs request timed out")
+		}
 		slog.Error("GetTweetByIDs failed", "err", err)
 		return nil, err
 	}
@@ -166,7 +173,7 @@ func (t *twitterApi) GetTweetByIDs(tweetIDs []string) (*GetTweetByIDsResponse, e
 	}
 	if response.Status != "success" {
 		slog.Error("GetTweetByIDs failed", "status", response.Status, "message", response.Message)
-		return nil, errors.New("GetTweetByIDs failed")
+		return nil, errors.New(response.Message)
 	}
 
 	return response, nil

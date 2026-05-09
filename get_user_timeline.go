@@ -8,6 +8,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	neturl "net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -249,22 +250,28 @@ func (t *twitterApi) GetUserTimeline(userId string, includeReplies, includeParen
 		return nil, errors.New("userId is required")
 	}
 
-	url := userTwitterDomainURI + "/tweet_timeline?userId=" + userId
+	vals := neturl.Values{}
+	vals.Set("userId", userId)
 	if includeReplies != nil {
-		url += "&includeReplies=" + strconv.FormatBool(*includeReplies)
+		vals.Set("includeReplies", strconv.FormatBool(*includeReplies))
 	}
 	if includeParentTweet != nil {
-		url += "&includeParentTweet=" + strconv.FormatBool(*includeParentTweet)
+		vals.Set("includeParentTweet", strconv.FormatBool(*includeParentTweet))
 	}
 	if cursor != nil && *cursor != "" {
-		url += "&cursor=" + *cursor
+		vals.Set("cursor", *cursor)
 	}
+	url := userTwitterDomainURI + "/tweet_timeline?" + vals.Encode()
 
 	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*10)
 	defer cancel1()
 
 	jsonData, resp, err := getDataWithHeader(ctx1, t.httpClient, url, t.headers)
 	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			slog.Error("GetUserTimeline request timed out", "url", url)
+			return nil, errors.New("GetUserTimeline request timed out")
+		}
 		slog.Error("GetUserTimeline failed", "err", err)
 		return nil, err
 	}
@@ -280,7 +287,7 @@ func (t *twitterApi) GetUserTimeline(userId string, includeReplies, includeParen
 	}
 	if response.Status != "success" {
 		slog.Error("GetUserTimeline failed", "status", response.Status, "message", response.Message)
-		return nil, errors.New("GetUserTimeline failed")
+		return nil, errors.New(response.Message)
 	}
 
 	return response, nil

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	neturl "net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -146,30 +147,31 @@ func (t *twitterApi) GetTweetQuote(tweetID string, sinceTime *int, untilTime *in
 		return nil, errors.New("tweetID is required")
 	}
 
-	queryParts := []string{}
-	queryParts = append(queryParts, "tweetId="+tweetID)
+	vals := neturl.Values{}
+	vals.Set("tweetId", tweetID)
 	if sinceTime != nil {
-		queryParts = append(queryParts, "sinceTime="+strconv.Itoa(*sinceTime))
+		vals.Set("sinceTime", strconv.Itoa(*sinceTime))
 	}
 	if untilTime != nil {
-		queryParts = append(queryParts, "untilTime="+strconv.Itoa(*untilTime))
+		vals.Set("untilTime", strconv.Itoa(*untilTime))
 	}
 	if includeReplies != nil {
-		queryParts = append(queryParts, "includeReplies="+strconv.FormatBool(*includeReplies))
+		vals.Set("includeReplies", strconv.FormatBool(*includeReplies))
 	}
 	if cursor != nil && *cursor != "" {
-		queryParts = append(queryParts, "cursor="+*cursor)
+		vals.Set("cursor", *cursor)
 	}
-	url := twitterDomainURI + "/tweet/quotes"
-	if len(queryParts) > 0 {
-		url += "?" + strings.Join(queryParts, "&")
-	}
+	url := twitterDomainURI + "/tweet/quotes?" + vals.Encode()
 
 	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*10)
 	defer cancel1()
 
 	jsonData, resp, err := getDataWithHeader(ctx1, t.httpClient, url, t.headers)
 	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			slog.Error("GetTweetQuote request timed out", "url", url)
+			return nil, errors.New("GetTweetQuote request timed out")
+		}
 		slog.Error("GetTweetQuote failed", "err", err)
 		return nil, err
 	}
@@ -185,7 +187,7 @@ func (t *twitterApi) GetTweetQuote(tweetID string, sinceTime *int, untilTime *in
 	}
 	if response.Status != "success" {
 		slog.Error("GetTweetQuote failed", "status", response.Status, "message", response.Message)
-		return nil, errors.New("GetTweetQuote failed")
+		return nil, errors.New(response.Message)
 	}
 
 	return response, nil

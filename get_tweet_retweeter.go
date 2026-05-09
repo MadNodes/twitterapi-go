@@ -7,6 +7,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	neturl "net/url"
 	"strings"
 	"time"
 
@@ -91,21 +92,22 @@ func (t *twitterApi) GetTweetRetweeter(tweetID string, cursor *string) (*GetTwee
 		return nil, errors.New("tweetID is required")
 	}
 
-	queryParts := []string{}
-	queryParts = append(queryParts, "tweetId="+tweetID)
+	vals := neturl.Values{}
+	vals.Set("tweetId", tweetID)
 	if cursor != nil && *cursor != "" {
-		queryParts = append(queryParts, "cursor="+*cursor)
+		vals.Set("cursor", *cursor)
 	}
-	url := twitterDomainURI + "/tweet/retweeters"
-	if len(queryParts) > 0 {
-		url += "?" + strings.Join(queryParts, "&")
-	}
+	url := twitterDomainURI + "/tweet/retweeters?" + vals.Encode()
 
 	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*10)
 	defer cancel1()
 
 	jsonData, resp, err := getDataWithHeader(ctx1, t.httpClient, url, t.headers)
 	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			slog.Error("GetTweetRetweeter request timed out", "url", url)
+			return nil, errors.New("GetTweetRetweeter request timed out")
+		}
 		slog.Error("GetTweetRetweeter failed", "err", err)
 		return nil, err
 	}

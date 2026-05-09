@@ -7,6 +7,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	neturl "net/url"
 	"strings"
 	"time"
 
@@ -143,21 +144,22 @@ func (t *twitterApi) GetAllCommunityTweets(query string, cursor *string) (*GetAl
 		return nil, errors.New("query is required")
 	}
 
-	queryParts := []string{}
-	queryParts = append(queryParts, "query="+query)
+	vals := neturl.Values{}
+	vals.Set("query", query)
 	if cursor != nil && *cursor != "" {
-		queryParts = append(queryParts, "cursor="+*cursor)
+		vals.Set("cursor", *cursor)
 	}
-	url := twitterDomainURI + "/community/get_tweets_from_all_community"
-	if len(queryParts) > 0 {
-		url += "?" + strings.Join(queryParts, "&")
-	}
+	url := twitterDomainURI + "/community/get_tweets_from_all_community?" + vals.Encode()
 
 	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*10)
 	defer cancel1()
 
 	jsonData, resp, err := getDataWithHeader(ctx1, t.httpClient, url, t.headers)
 	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			slog.Error("GetAllCommunityTweets request timed out", "url", url)
+			return nil, errors.New("GetAllCommunityTweets request timed out")
+		}
 		slog.Error("GetAllCommunityTweets failed", "err", err)
 		return nil, err
 	}

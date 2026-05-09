@@ -8,6 +8,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	neturl "net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -250,22 +251,28 @@ func (t *twitterApi) GetUserMentions(userName string, sinceTime, untilTime *int6
 		return nil, errors.New("userName is required")
 	}
 
-	url := userTwitterDomainURI + "/mentions?userName=" + userName
+	vals := neturl.Values{}
+	vals.Set("userName", userName)
 	if sinceTime != nil {
-		url += "&sinceTime=" + strconv.FormatInt(*sinceTime, 10)
+		vals.Set("sinceTime", strconv.FormatInt(*sinceTime, 10))
 	}
 	if untilTime != nil {
-		url += "&untilTime=" + strconv.FormatInt(*untilTime, 10)
+		vals.Set("untilTime", strconv.FormatInt(*untilTime, 10))
 	}
 	if cursor != nil && *cursor != "" {
-		url += "&cursor=" + *cursor
+		vals.Set("cursor", *cursor)
 	}
+	url := userTwitterDomainURI + "/mentions?" + vals.Encode()
 
 	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*10)
 	defer cancel1()
 
 	jsonData, resp, err := getDataWithHeader(ctx1, t.httpClient, url, t.headers)
 	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			slog.Error("GetUserMentions request timed out", "url", url)
+			return nil, errors.New("GetUserMentions request timed out")
+		}
 		slog.Error("GetUserMentions failed", "err", err)
 		return nil, err
 	}
@@ -281,7 +288,7 @@ func (t *twitterApi) GetUserMentions(userName string, sinceTime, untilTime *int6
 	}
 	if response.Status != "success" {
 		slog.Error("GetUserMentions failed", "status", response.Status, "message", response.Message)
-		return nil, errors.New("GetUserMentions failed")
+		return nil, errors.New(response.Message)
 	}
 
 	return response, nil

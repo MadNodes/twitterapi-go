@@ -25,6 +25,10 @@ func (t *twitterApi) GetMyInfo() (*GetMyInfoResponse, error) {
 
 	jsonData, resp, err := getDataWithHeader(ctx1, t.httpClient, url, t.headers)
 	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			slog.Error("GetMyInfo request timed out", "url", url)
+			return nil, errors.New("GetMyInfo request timed out")
+		}
 		slog.Error("GetMyInfo failed", "err", err)
 		return nil, err
 	}

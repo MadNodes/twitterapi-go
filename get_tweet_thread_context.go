@@ -7,6 +7,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	neturl "net/url"
 	"strings"
 	"time"
 
@@ -145,21 +146,22 @@ func (t *twitterApi) GetTweetThreadContext(tweetID string, cursor *string) (*Get
 		return nil, errors.New("tweetID is required")
 	}
 
-	queryParts := []string{}
-	queryParts = append(queryParts, "tweetId="+tweetID)
+	vals := neturl.Values{}
+	vals.Set("tweetId", tweetID)
 	if cursor != nil && *cursor != "" {
-		queryParts = append(queryParts, "cursor="+*cursor)
+		vals.Set("cursor", *cursor)
 	}
-	url := twitterDomainURI + "/tweet/thread_context"
-	if len(queryParts) > 0 {
-		url += "?" + strings.Join(queryParts, "&")
-	}
+	url := twitterDomainURI + "/tweet/thread_context?" + vals.Encode()
 
 	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*10)
 	defer cancel1()
 
 	jsonData, resp, err := getDataWithHeader(ctx1, t.httpClient, url, t.headers)
 	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			slog.Error("GetTweetThreadContext request timed out", "url", url)
+			return nil, errors.New("GetTweetThreadContext request timed out")
+		}
 		slog.Error("GetTweetThreadContext failed", "err", err)
 		return nil, err
 	}
@@ -175,7 +177,7 @@ func (t *twitterApi) GetTweetThreadContext(tweetID string, cursor *string) (*Get
 	}
 	if response.Status != "success" {
 		slog.Error("GetTweetThreadContext failed", "status", response.Status, "message", response.Message)
-		return nil, errors.New("GetTweetThreadContext failed")
+		return nil, errors.New(response.Message)
 	}
 
 	return response, nil
