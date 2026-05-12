@@ -1,6 +1,7 @@
 package twitterapi
 
 import (
+	neturl "net/url"
 	"os"
 	"testing"
 )
@@ -9,7 +10,9 @@ func TestGetCommunityModerators(t *testing.T) {
 	client := newTestClient(t)
 	// real community ID that exposes moderators
 	communityID := "1512879283559141381"
-	url := twitterDomainURI + "/community/moderators?community_id=" + communityID
+	vals := neturl.Values{}
+	vals.Set("community_id", communityID)
+	url := twitterDomainURI + "/community/moderators?" + vals.Encode()
 
 	raw, statusCode, err := doGet(t, client, url)
 	if err != nil {

@@ -1,6 +1,7 @@
 package twitterapi
 
 import (
+	neturl "net/url"
 	"os"
 	"testing"
 )
@@ -8,7 +9,9 @@ import (
 func TestGetAllCommunityTweets(t *testing.T) {
 	client := newTestClient(t)
 	query := "from:" + testUserName
-	url := twitterDomainURI + "/community/get_tweets_from_all_community?query=" + query
+	vals := neturl.Values{}
+	vals.Set("query", query)
+	url := twitterDomainURI + "/community/get_tweets_from_all_community?" + vals.Encode()
 
 	raw, statusCode, err := doGet(t, client, url)
 	if err != nil {

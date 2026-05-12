@@ -1,13 +1,16 @@
 package twitterapi
 
 import (
+	neturl "net/url"
 	"os"
 	"testing"
 )
 
 func TestGetListTimeline(t *testing.T) {
 	client := newTestClient(t)
-	url := listTwitterDomainURI + "/tweets_timeline?listId=" + testListID
+	vals := neturl.Values{}
+	vals.Set("listId", testListID)
+	url := listTwitterDomainURI + "/tweets_timeline?" + vals.Encode()
 
 	raw, statusCode, err := doGet(t, client, url)
 	if err != nil {

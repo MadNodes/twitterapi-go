@@ -1,13 +1,16 @@
 package twitterapi
 
 import (
+	neturl "net/url"
 	"os"
 	"testing"
 )
 
 func TestGetTweetRepliesV2(t *testing.T) {
 	client := newTestClient(t)
-	url := twitterDomainURI + "/tweet/replies/v2?tweetId=" + testTweetID
+	vals := neturl.Values{}
+	vals.Set("tweetId", testTweetID)
+	url := twitterDomainURI + "/tweet/replies/v2?" + vals.Encode()
 
 	raw, statusCode, err := doGet(t, client, url)
 	if err != nil {

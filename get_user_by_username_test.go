@@ -1,13 +1,16 @@
 package twitterapi
 
 import (
+	"net/url"
 	"os"
 	"testing"
 )
 
 func TestGetUserInfo(t *testing.T) {
 	client := newTestClient(t)
-	url := userTwitterDomainURI + "/info?userName=" + testUserName
+	vals := url.Values{}
+	vals.Set("userName", testUserName)
+	url := userTwitterDomainURI + "/info?" + vals.Encode()
 
 	raw, statusCode, err := doGet(t, client, url)
 	if err != nil {

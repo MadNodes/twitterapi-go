@@ -1,6 +1,7 @@
 package twitterapi
 
 import (
+	neturl "net/url"
 	"os"
 	"testing"
 )
@@ -8,7 +9,9 @@ import (
 func TestTweetAdvancedSearch(t *testing.T) {
 	client := newTestClient(t)
 	query := "from:" + testUserName
-	url := twitterDomainURI + "/tweet/advanced_search?query=" + query
+	vals := neturl.Values{}
+	vals.Set("query", query)
+	url := twitterDomainURI + "/tweet/advanced_search?" + vals.Encode()
 
 	raw, statusCode, err := doGet(t, client, url)
 	if err != nil {

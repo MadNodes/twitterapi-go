@@ -1,6 +1,7 @@
 package twitterapi
 
 import (
+	neturl "net/url"
 	"os"
 	"strconv"
 	"testing"
@@ -9,7 +10,11 @@ import (
 func TestGetTweetQuote(t *testing.T) {
 	client := newTestClient(t)
 	sinceTime, untilTime := last7DaysRangeUnixInt()
-	url := twitterDomainURI + "/tweet/quotes?tweetId=" + testTweetID + "&sinceTime=" + strconv.Itoa(sinceTime) + "&untilTime=" + strconv.Itoa(untilTime)
+	vals := neturl.Values{}
+	vals.Set("tweetId", testTweetID)
+	vals.Set("sinceTime", strconv.Itoa(sinceTime))
+	vals.Set("untilTime", strconv.Itoa(untilTime))
+	url := twitterDomainURI + "/tweet/quotes?" + vals.Encode()
 
 	raw, statusCode, err := doGet(t, client, url)
 	if err != nil {

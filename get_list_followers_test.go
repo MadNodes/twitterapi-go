@@ -1,13 +1,16 @@
 package twitterapi
 
 import (
+	neturl "net/url"
 	"os"
 	"testing"
 )
 
 func TestGetListFollowers(t *testing.T) {
 	client := newTestClient(t)
-	url := listTwitterDomainURI + "/followers?list_id=" + testListID
+	vals := neturl.Values{}
+	vals.Set("list_id", testListID)
+	url := listTwitterDomainURI + "/followers?" + vals.Encode()
 
 	raw, statusCode, err := doGet(t, client, url)
 	if err != nil {

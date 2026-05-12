@@ -1,6 +1,7 @@
 package twitterapi
 
 import (
+	neturl "net/url"
 	"os"
 	"strconv"
 	"testing"
@@ -11,7 +12,10 @@ func TestGetUserFollowersIDs(t *testing.T) {
 	count := 10
 	// use xiaohu since Twitter/X doesn't expose this endpoint cleanly
 	userName := "xiaohu"
-	url := userTwitterDomainURI + "/followers_ids?userName=" + userName + "&count=" + strconv.Itoa(count)
+	vals := neturl.Values{}
+	vals.Set("userName", userName)
+	vals.Set("count", strconv.Itoa(count))
+	url := userTwitterDomainURI + "/followers_ids?" + vals.Encode()
 
 	raw, statusCode, err := doGet(t, client, url)
 	if err != nil {

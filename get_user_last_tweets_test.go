@@ -1,13 +1,16 @@
 package twitterapi
 
 import (
+	neturl "net/url"
 	"os"
 	"testing"
 )
 
 func TestGetUserLastTweets(t *testing.T) {
 	client := newTestClient(t)
-	url := userTwitterDomainURI + "/last_tweets?userId=" + testUserID
+	vals := neturl.Values{}
+	vals.Set("userId", testUserID)
+	url := userTwitterDomainURI + "/last_tweets?" + vals.Encode()
 
 	raw, statusCode, err := doGet(t, client, url)
 	if err != nil {

@@ -1,6 +1,7 @@
 package twitterapi
 
 import (
+	neturl "net/url"
 	"os"
 	"strconv"
 	"testing"
@@ -9,7 +10,10 @@ import (
 func TestGetUserFollowings(t *testing.T) {
 	client := newTestClient(t)
 	pageSize := 10
-	url := userTwitterDomainURI + "/followings?userName=" + testUserName + "&pageSize=" + strconv.Itoa(pageSize)
+	vals := neturl.Values{}
+	vals.Set("userName", testUserName)
+	vals.Set("pageSize", strconv.Itoa(pageSize))
+	url := userTwitterDomainURI + "/followings?" + vals.Encode()
 
 	raw, statusCode, err := doGet(t, client, url)
 	if err != nil {

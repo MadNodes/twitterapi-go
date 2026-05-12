@@ -1,6 +1,7 @@
 package twitterapi
 
 import (
+	neturl "net/url"
 	"os"
 	"strconv"
 	"testing"
@@ -9,7 +10,10 @@ import (
 func TestGetTrends(t *testing.T) {
 	client := newTestClient(t)
 	count := 10
-	url := twitterDomainURI + "/trends?woeid=1&count=" + strconv.Itoa(count)
+	vals := neturl.Values{}
+	vals.Set("woeid", "1")
+	vals.Set("count", strconv.Itoa(count))
+	url := twitterDomainURI + "/trends?" + vals.Encode()
 
 	raw, statusCode, err := doGet(t, client, url)
 	if err != nil {

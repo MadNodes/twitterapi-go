@@ -1,6 +1,7 @@
 package twitterapi
 
 import (
+	neturl "net/url"
 	"os"
 	"testing"
 )
@@ -11,7 +12,10 @@ func TestCheckFollowRelationship(t *testing.T) {
 	// returns status=failed with no data
 	sourceUserName := "xiaohu"
 	targetUserName := "elonmusk"
-	url := userTwitterDomainURI + "/check_follow_relationship?source_user_name=" + sourceUserName + "&target_user_name=" + targetUserName
+	vals := neturl.Values{}
+	vals.Set("source_user_name", sourceUserName)
+	vals.Set("target_user_name", targetUserName)
+	url := userTwitterDomainURI + "/check_follow_relationship?" + vals.Encode()
 
 	raw, statusCode, err := doGet(t, client, url)
 	if err != nil {

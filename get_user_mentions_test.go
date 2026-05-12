@@ -1,6 +1,7 @@
 package twitterapi
 
 import (
+	neturl "net/url"
 	"os"
 	"strconv"
 	"testing"
@@ -9,7 +10,11 @@ import (
 func TestGetUserMentions(t *testing.T) {
 	client := newTestClient(t)
 	sinceTime, untilTime := last7DaysRangeUnix()
-	url := userTwitterDomainURI + "/mentions?userName=" + testUserName + "&sinceTime=" + strconv.FormatInt(sinceTime, 10) + "&untilTime=" + strconv.FormatInt(untilTime, 10)
+	vals := neturl.Values{}
+	vals.Set("userName", testUserName)
+	vals.Set("sinceTime", strconv.FormatInt(sinceTime, 10))
+	vals.Set("untilTime", strconv.FormatInt(untilTime, 10))
+	url := userTwitterDomainURI + "/mentions?" + vals.Encode()
 
 	raw, statusCode, err := doGet(t, client, url)
 	if err != nil {

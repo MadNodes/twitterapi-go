@@ -1,13 +1,16 @@
 package twitterapi
 
 import (
+	neturl "net/url"
 	"os"
 	"testing"
 )
 
 func TestGetCommunityMembers(t *testing.T) {
 	client := newTestClient(t)
-	url := twitterDomainURI + "/community/members?community_id=" + testCommunityID
+	vals := neturl.Values{}
+	vals.Set("community_id", testCommunityID)
+	url := twitterDomainURI + "/community/members?" + vals.Encode()
 
 	raw, statusCode, err := doGet(t, client, url)
 	if err != nil {
