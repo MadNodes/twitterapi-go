@@ -245,7 +245,7 @@ type GetUserTimelineResponse struct {
 	NextCursor  string               `json:"next_cursor"`
 }
 
-func (t *twitterApi) GetUserTimeline(userId string, includeReplies, includeParentTweet *bool, cursor *string) (*GetUserTimelineResponse, error) {
+func (t *TwitterApi) GetUserTimeline(userId string, includeReplies, includeParentTweet *bool, cursor *string) (*GetUserTimelineResponse, error) {
 	if strings.TrimSpace(userId) == "" {
 		return nil, errors.New("userId is required")
 	}

@@ -21,7 +21,7 @@ type updateBannerResponse struct {
 }
 
 // UpdateBanner
-func (t *twitterApi) UpdateBanner(filename string, filebody io.Reader) error {
+func (t *TwitterApi) UpdateBanner(filename string, filebody io.Reader) error {
 	if filename == "" || filebody == nil {
 		return errors.New("filename is empty")
 	}

@@ -141,7 +141,7 @@ type GetTweetThreadContextResponse struct {
 	Message     string                        `json:"msg"` // fixed: was message
 }
 
-func (t *twitterApi) GetTweetThreadContext(tweetID string, cursor *string) (*GetTweetThreadContextResponse, error) {
+func (t *TwitterApi) GetTweetThreadContext(tweetID string, cursor *string) (*GetTweetThreadContextResponse, error) {
 	if strings.TrimSpace(tweetID) == "" {
 		return nil, errors.New("tweetID is required")
 	}

@@ -90,7 +90,7 @@ type GetCommunityMembersResponse struct {
 	Message     string                       `json:"msg"`
 }
 
-func (t *twitterApi) GetCommunityMembers(communityID string, cursor *string) (*GetCommunityMembersResponse, error) {
+func (t *TwitterApi) GetCommunityMembers(communityID string, cursor *string) (*GetCommunityMembersResponse, error) {
 	if strings.TrimSpace(communityID) == "" {
 		return nil, errors.New("communityID is required")
 	}

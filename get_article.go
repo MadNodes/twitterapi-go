@@ -116,7 +116,7 @@ type GetArticleResponse struct {
 	Message string             `json:"msg"` // fixed: was message
 }
 
-func (t *twitterApi) GetArticle(tweetID string) (*GetArticleResponse, error) {
+func (t *TwitterApi) GetArticle(tweetID string) (*GetArticleResponse, error) {
 	if strings.TrimSpace(tweetID) == "" {
 		return nil, errors.New("tweetID is required")
 	}

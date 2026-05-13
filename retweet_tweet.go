@@ -26,7 +26,7 @@ type retweetTweetResponse struct {
 }
 
 // RetweetTweet
-func (t *twitterApi) RetweetTweet(tweetID string) error {
+func (t *TwitterApi) RetweetTweet(tweetID string) error {
 	if tweetID == "" {
 		return errors.New("tweetID is empty")
 	}

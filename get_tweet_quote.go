@@ -142,7 +142,7 @@ type GetTweetQuoteResponse struct {
 	Message     string                `json:"msg"` // fixed: was message
 }
 
-func (t *twitterApi) GetTweetQuote(tweetID string, sinceTime *int, untilTime *int, includeReplies *bool, cursor *string) (*GetTweetQuoteResponse, error) {
+func (t *TwitterApi) GetTweetQuote(tweetID string, sinceTime *int, untilTime *int, includeReplies *bool, cursor *string) (*GetTweetQuoteResponse, error) {
 	if strings.TrimSpace(tweetID) == "" {
 		return nil, errors.New("tweetID is required")
 	}

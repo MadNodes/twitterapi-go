@@ -26,7 +26,7 @@ type unfollowUserResponse struct {
 }
 
 // UnfollowUser
-func (t *twitterApi) UnfollowUser(userID string) error {
+func (t *TwitterApi) UnfollowUser(userID string) error {
 	if userID == "" {
 		return errors.New("userID is empty")
 	}

@@ -19,7 +19,7 @@ func buildBatchGetUserInfoURL(userIds []string) string {
 	return userTwitterDomainURI + "/batch_info_by_ids?" + vals.Encode()
 }
 
-func doGetWithRetry5xx(t *testing.T, client *twitterApi, url string) ([]byte, int, error) {
+func doGetWithRetry5xx(t *testing.T, client *TwitterApi, url string) ([]byte, int, error) {
 	t.Helper()
 
 	var raw []byte
@@ -43,7 +43,7 @@ func doGetWithRetry5xx(t *testing.T, client *twitterApi, url string) ([]byte, in
 	return raw, statusCode, nil
 }
 
-func batchGetUserInfoByUserIdsWithRetry5xx(t *testing.T, client *twitterApi, userIds []string) (*BatchGetUserInfoByUserIdsResponse, error) {
+func batchGetUserInfoByUserIdsWithRetry5xx(t *testing.T, client *TwitterApi, userIds []string) (*BatchGetUserInfoByUserIdsResponse, error) {
 	t.Helper()
 
 	if len(userIds) == 0 {

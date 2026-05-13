@@ -28,7 +28,7 @@ type updateWebhookRuleResponse struct {
 }
 
 // UpdateWebhookRule
-func (t *twitterApi) UpdateWebhookRule(ruleID, tag, value string, intervalSeconds float64, isEffect int) error {
+func (t *TwitterApi) UpdateWebhookRule(ruleID, tag, value string, intervalSeconds float64, isEffect int) error {
 	if ruleID == "" {
 		return errors.New("ruleID is empty")
 	}

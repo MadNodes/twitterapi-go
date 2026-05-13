@@ -28,7 +28,7 @@ type joinCommunityResponse struct {
 }
 
 // JoinCommunity
-func (t *twitterApi) JoinCommunity(communityID string) (string, string, error) {
+func (t *TwitterApi) JoinCommunity(communityID string) (string, string, error) {
 	if communityID == "" {
 		return "", "", errors.New("communityID is empty")
 	}

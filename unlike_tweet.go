@@ -26,7 +26,7 @@ type unlikeTweetResponse struct {
 }
 
 // UnlikeTweet
-func (t *twitterApi) UnlikeTweet(tweetID string) error {
+func (t *TwitterApi) UnlikeTweet(tweetID string) error {
 	if tweetID == "" {
 		return errors.New("tweetID is empty")
 	}

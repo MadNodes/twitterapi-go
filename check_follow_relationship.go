@@ -24,7 +24,7 @@ type CheckFollowRelationshipResponse struct {
 	Data    *CheckFollowRelationshipData `json:"data"`
 }
 
-func (t *twitterApi) CheckFollowRelationship(sourceUserName, targetUserName string) (*CheckFollowRelationshipResponse, error) {
+func (t *TwitterApi) CheckFollowRelationship(sourceUserName, targetUserName string) (*CheckFollowRelationshipResponse, error) {
 	if strings.TrimSpace(sourceUserName) == "" {
 		return nil, errors.New("sourceUserName is required")
 	}

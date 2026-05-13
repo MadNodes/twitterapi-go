@@ -31,7 +31,7 @@ type GetUsersToMonitorTweetResponse struct {
 }
 
 // GetUsersToMonitorTweet
-func (t *twitterApi) GetUsersToMonitorTweet() (*GetUsersToMonitorTweetResponse, error) {
+func (t *TwitterApi) GetUsersToMonitorTweet() (*GetUsersToMonitorTweetResponse, error) {
 	url := streamDomainURI + "/get_user_to_monitor_tweet"
 
 	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*10)

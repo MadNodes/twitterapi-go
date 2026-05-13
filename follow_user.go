@@ -25,7 +25,7 @@ type followUserResponse struct {
 }
 
 // FollowUser
-func (t *twitterApi) FollowUser(userID string) error {
+func (t *TwitterApi) FollowUser(userID string) error {
 	if userID == "" {
 		return errors.New("userID is empty")
 	}

@@ -140,7 +140,7 @@ type GetTweetByIDsResponse struct {
 	Code    int                   `json:"code"`
 }
 
-func (t *twitterApi) GetTweetByIDs(tweetIDs []string) (*GetTweetByIDsResponse, error) {
+func (t *TwitterApi) GetTweetByIDs(tweetIDs []string) (*GetTweetByIDsResponse, error) {
 	if len(tweetIDs) == 0 {
 		return nil, errors.New("tweet_ids is empty")
 	}

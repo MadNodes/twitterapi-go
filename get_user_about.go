@@ -95,7 +95,7 @@ type GetUserAboutResponse struct {
 	Message string            `json:"msg"`
 }
 
-func (t *twitterApi) GetUserAbout(userName *string) (*GetUserAboutResponse, error) {
+func (t *TwitterApi) GetUserAbout(userName *string) (*GetUserAboutResponse, error) {
 	if userName == nil || strings.TrimSpace(*userName) == "" {
 		return nil, errors.New("userName is required")
 	}

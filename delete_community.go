@@ -27,7 +27,7 @@ type deleteCommunityResponse struct {
 }
 
 // DeleteCommunity
-func (t *twitterApi) DeleteCommunity(communityID, communityName string) error {
+func (t *TwitterApi) DeleteCommunity(communityID, communityName string) error {
 	if communityID == "" {
 		return errors.New("communityID is empty")
 	}

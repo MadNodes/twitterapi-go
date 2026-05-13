@@ -141,7 +141,7 @@ type ListTimelineResponse struct {
 	Message     string               `json:"msg"`
 }
 
-func (t *twitterApi) GetListTimeline(listID string, cursor *string) (*ListTimelineResponse, error) {
+func (t *TwitterApi) GetListTimeline(listID string, cursor *string) (*ListTimelineResponse, error) {
 	if strings.TrimSpace(listID) == "" {
 		return nil, errors.New("listID is required")
 	}

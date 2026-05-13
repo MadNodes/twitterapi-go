@@ -138,7 +138,7 @@ type TweetAdvancedSearchResponse struct {
 	NextCursor  string                      `json:"next_cursor"`
 }
 
-func (t *twitterApi) TweetAdvancedSearch(query string, cursor *string) (*TweetAdvancedSearchResponse, error) {
+func (t *TwitterApi) TweetAdvancedSearch(query string, cursor *string) (*TweetAdvancedSearchResponse, error) {
 	if strings.TrimSpace(query) == "" {
 		return nil, errors.New("query is required")
 	}

@@ -26,7 +26,7 @@ type likeTweetResponse struct {
 }
 
 // LikeTweet
-func (t *twitterApi) LikeTweet(tweetID string) error {
+func (t *TwitterApi) LikeTweet(tweetID string) error {
 	if tweetID == "" {
 		return errors.New("tweetID is empty")
 	}

@@ -134,7 +134,7 @@ type GetSpaceDetailResponse struct {
 	Message string              `json:"msg"`
 }
 
-func (t *twitterApi) GetSpaceDetail(spaceID *string) (*GetSpaceDetailResponse, error) {
+func (t *TwitterApi) GetSpaceDetail(spaceID *string) (*GetSpaceDetailResponse, error) {
 	if spaceID == nil || strings.TrimSpace(*spaceID) == "" {
 		return nil, errors.New("spaceID is required")
 	}

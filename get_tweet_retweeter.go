@@ -87,7 +87,7 @@ type GetTweetRetweeterResponse struct {
 	NextCursor  string                   `json:"next_cursor"`
 }
 
-func (t *twitterApi) GetTweetRetweeter(tweetID string, cursor *string) (*GetTweetRetweeterResponse, error) {
+func (t *TwitterApi) GetTweetRetweeter(tweetID string, cursor *string) (*GetTweetRetweeterResponse, error) {
 	if strings.TrimSpace(tweetID) == "" {
 		return nil, errors.New("tweetID is required")
 	}

@@ -251,7 +251,7 @@ type GetUserLastTweetsResponse struct {
 	NextCursor  string                 `json:"next_cursor"`
 }
 
-func (t *twitterApi) GetUserLastTweets(userId, userName *string, includeReplies *bool, cursor *string) (*GetUserLastTweetsResponse, error) {
+func (t *TwitterApi) GetUserLastTweets(userId, userName *string, includeReplies *bool, cursor *string) (*GetUserLastTweetsResponse, error) {
 	if (userId == nil || strings.TrimSpace(*userId) == "") && (userName == nil || strings.TrimSpace(*userName) == "") {
 		return nil, errors.New("userId or userName is required")
 	}

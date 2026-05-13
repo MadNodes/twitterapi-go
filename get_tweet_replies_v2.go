@@ -141,7 +141,7 @@ type GetTweetRepliesV2Response struct {
 	Message     string                    `json:"msg"` // fixed: was message
 }
 
-func (t *twitterApi) GetTweetRepliesV2(tweetID string, cursor *string) (*GetTweetRepliesV2Response, error) {
+func (t *TwitterApi) GetTweetRepliesV2(tweetID string, cursor *string) (*GetTweetRepliesV2Response, error) {
 	if strings.TrimSpace(tweetID) == "" {
 		return nil, errors.New("tweetID is required")
 	}

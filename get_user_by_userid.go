@@ -7,7 +7,7 @@ import (
 
 // GetUserInfoByID is a convenience wrapper around BatchGetUserInfoByUserIds
 // to fetch a single user's profile by their numeric user ID.
-func (t *twitterApi) GetUserInfoByID(userId string) (*BatchGetUserInfoByUserIdsUser, error) {
+func (t *TwitterApi) GetUserInfoByID(userId string) (*BatchGetUserInfoByUserIdsUser, error) {
 	if strings.TrimSpace(userId) == "" {
 		return nil, errors.New("userId is required")
 	}

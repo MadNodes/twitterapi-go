@@ -33,11 +33,11 @@ type createTweetResponse struct {
 	Message string `json:"message"`
 }
 
-func (t *twitterApi) ReplyTweet(text string, mediaIDs []string, replyToTweetID, attachmentURL, communityID, quoteTweetID, scheduleFor *string, isNoteTweet *bool) (string, error) {
+func (t *TwitterApi) ReplyTweet(text string, mediaIDs []string, replyToTweetID, attachmentURL, communityID, quoteTweetID, scheduleFor *string, isNoteTweet *bool) (string, error) {
 	return t.CreateTweet(text, mediaIDs, replyToTweetID, attachmentURL, communityID, quoteTweetID, scheduleFor, isNoteTweet)
 }
 
-func (t *twitterApi) CreateTweet(text string, mediaIDs []string, replyToTweetID, attachmentURL, communityID, quoteTweetID, scheduleFor *string, isNoteTweet *bool) (string, error) {
+func (t *TwitterApi) CreateTweet(text string, mediaIDs []string, replyToTweetID, attachmentURL, communityID, quoteTweetID, scheduleFor *string, isNoteTweet *bool) (string, error) {
 	if text == "" {
 		return "", errors.New("text is empty")
 	}

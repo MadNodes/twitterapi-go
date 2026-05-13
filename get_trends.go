@@ -48,7 +48,7 @@ type GetTrendsResponse struct {
 	Metadata *GetTrendsMetadata `json:"metadata"` // added: from live response
 }
 
-func (t *twitterApi) GetTrends(woeid int, count *int, the *string) (*GetTrendsResponse, error) {
+func (t *TwitterApi) GetTrends(woeid int, count *int, the *string) (*GetTrendsResponse, error) {
 	if woeid <= 0 {
 		return nil, errors.New("woeid is empty")
 	}

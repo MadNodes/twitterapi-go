@@ -29,12 +29,12 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func newTestClient(t *testing.T) *twitterApi {
+func newTestClient(t *testing.T) *TwitterApi {
 	t.Helper()
 	return New(apiKey)
 }
 
-func doGet(t *testing.T, client *twitterApi, url string) ([]byte, int, error) {
+func doGet(t *testing.T, client *TwitterApi, url string) ([]byte, int, error) {
 	t.Helper()
 	if client == nil {
 		return nil, 0, errors.New("client is nil")

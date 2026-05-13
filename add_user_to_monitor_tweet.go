@@ -24,7 +24,7 @@ type addUserToMonitorTweetResponse struct {
 }
 
 // AddUserToMonitorTweet
-func (t *twitterApi) AddUserToMonitorTweet(xUserName string) error {
+func (t *TwitterApi) AddUserToMonitorTweet(xUserName string) error {
 	if xUserName == "" {
 		return errors.New("xUserName is empty")
 	}

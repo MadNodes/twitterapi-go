@@ -31,7 +31,7 @@ type loginResponse struct {
 }
 
 // Login
-func (t *twitterApi) Login(username, email, password string, totpSecret *string) error {
+func (t *TwitterApi) Login(username, email, password string, totpSecret *string) error {
 	if t.cookies != "" {
 		return nil
 	}

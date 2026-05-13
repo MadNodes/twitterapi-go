@@ -26,7 +26,7 @@ type GetWebhookRulesResponse struct {
 }
 
 // GetWebhookRules
-func (t *twitterApi) GetWebhookRules() (*GetWebhookRulesResponse, error) {
+func (t *TwitterApi) GetWebhookRules() (*GetWebhookRulesResponse, error) {
 	url := tweetFilterDomainURI + "/get_rules"
 
 	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*10)

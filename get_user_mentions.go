@@ -246,7 +246,7 @@ type GetUserMentionsResponse struct {
 	Message     string                  `json:"msg"`
 }
 
-func (t *twitterApi) GetUserMentions(userName string, sinceTime, untilTime *int64, cursor *string) (*GetUserMentionsResponse, error) {
+func (t *TwitterApi) GetUserMentions(userName string, sinceTime, untilTime *int64, cursor *string) (*GetUserMentionsResponse, error) {
 	if strings.TrimSpace(userName) == "" {
 		return nil, errors.New("userName is required")
 	}

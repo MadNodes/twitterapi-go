@@ -21,7 +21,7 @@ type updateAvatarResponse struct {
 }
 
 // UpdateAvatar
-func (t *twitterApi) UpdateAvatar(filename string, filebody io.Reader) error {
+func (t *TwitterApi) UpdateAvatar(filename string, filebody io.Reader) error {
 	if filename == "" || filebody == nil {
 		return errors.New("filename is empty")
 	}

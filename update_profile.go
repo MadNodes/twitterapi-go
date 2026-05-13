@@ -29,7 +29,7 @@ type updateProfileResponse struct {
 }
 
 // UpdateProfile
-func (t *twitterApi) UpdateProfile(name, description, location, url *string) error {
+func (t *TwitterApi) UpdateProfile(name, description, location, url *string) error {
 	if t.proxy == "" {
 		return errors.New("proxy is empty, please set WithProxy")
 	}

@@ -26,7 +26,7 @@ type unbookmarkTweetResponse struct {
 }
 
 // UnbookmarkTweet
-func (t *twitterApi) UnbookmarkTweet(tweetID string) error {
+func (t *TwitterApi) UnbookmarkTweet(tweetID string) error {
 	if tweetID == "" {
 		return errors.New("tweetID is empty")
 	}

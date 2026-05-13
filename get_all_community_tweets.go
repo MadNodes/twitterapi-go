@@ -139,7 +139,7 @@ type GetAllCommunityTweetsResponse struct {
 	NextCursor  string                        `json:"next_cursor"`
 }
 
-func (t *twitterApi) GetAllCommunityTweets(query string, cursor *string) (*GetAllCommunityTweetsResponse, error) {
+func (t *TwitterApi) GetAllCommunityTweets(query string, cursor *string) (*GetAllCommunityTweetsResponse, error) {
 	if strings.TrimSpace(query) == "" {
 		return nil, errors.New("query is required")
 	}

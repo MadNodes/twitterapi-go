@@ -24,7 +24,7 @@ type removeUserToMonitorTweetResponse struct {
 }
 
 // RemoveUserToMonitorTweet
-func (t *twitterApi) RemoveUserToMonitorTweet(idForUser string) error {
+func (t *TwitterApi) RemoveUserToMonitorTweet(idForUser string) error {
 	if idForUser == "" {
 		return errors.New("idForUser is empty")
 	}

@@ -65,7 +65,7 @@ type BatchGetUserInfoByUserIdsResponse struct {
 	Message string                           `json:"msg"`
 }
 
-func (t *twitterApi) BatchGetUserInfoByUserIds(userIds []string) (*BatchGetUserInfoByUserIdsResponse, error) {
+func (t *TwitterApi) BatchGetUserInfoByUserIds(userIds []string) (*BatchGetUserInfoByUserIdsResponse, error) {
 	if len(userIds) == 0 {
 		return nil, errors.New("userIds is empty")
 	}

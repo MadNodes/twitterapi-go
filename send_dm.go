@@ -30,7 +30,7 @@ type sendDMResponse struct {
 }
 
 // SendDM
-func (t *twitterApi) SendDM(userID, text string, mediaID, replyToMessageID *string) (string, error) {
+func (t *TwitterApi) SendDM(userID, text string, mediaID, replyToMessageID *string) (string, error) {
 	if userID == "" {
 		return "", errors.New("userID is empty")
 	}

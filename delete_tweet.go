@@ -26,7 +26,7 @@ type deleteTweetResponse struct {
 }
 
 // DeleteTweet
-func (t *twitterApi) DeleteTweet(tweetID string) error {
+func (t *TwitterApi) DeleteTweet(tweetID string) error {
 	if tweetID == "" {
 		return errors.New("tweetID is empty")
 	}

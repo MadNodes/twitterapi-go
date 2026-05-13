@@ -23,7 +23,7 @@ type uploadMediaResponse struct {
 }
 
 // UploadMedia
-func (t *twitterApi) UploadMedia(filename string, filebody io.Reader, isLongVideo *bool) (string, error) {
+func (t *TwitterApi) UploadMedia(filename string, filebody io.Reader, isLongVideo *bool) (string, error) {
 	if filename == "" || filebody == nil {
 		return "", errors.New("filename is empty")
 	}

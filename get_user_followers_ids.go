@@ -24,7 +24,7 @@ type GetUserFollowersIDsResponse struct {
 	Code        int      `json:"code"`
 }
 
-func (t *twitterApi) GetUserFollowersIDs(userName, userId *string, count *int, cursor *string) (*GetUserFollowersIDsResponse, error) {
+func (t *TwitterApi) GetUserFollowersIDs(userName, userId *string, count *int, cursor *string) (*GetUserFollowersIDsResponse, error) {
 	if (userName == nil || strings.TrimSpace(*userName) == "") && (userId == nil || strings.TrimSpace(*userId) == "") {
 		return nil, errors.New("userName or userId is required")
 	}

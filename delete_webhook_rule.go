@@ -24,7 +24,7 @@ type deleteWebhookRuleResponse struct {
 }
 
 // DeleteWebhookRule
-func (t *twitterApi) DeleteWebhookRule(ruleID string) error {
+func (t *TwitterApi) DeleteWebhookRule(ruleID string) error {
 	if ruleID == "" {
 		return errors.New("ruleID is empty")
 	}

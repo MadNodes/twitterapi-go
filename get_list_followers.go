@@ -89,7 +89,7 @@ type GetListFollowersResponse struct {
 	Message     string                      `json:"msg"`
 }
 
-func (t *twitterApi) GetListFollowers(listID string, cursor *string) (*GetListFollowersResponse, error) {
+func (t *TwitterApi) GetListFollowers(listID string, cursor *string) (*GetListFollowersResponse, error) {
 	if strings.TrimSpace(listID) == "" {
 		return nil, errors.New("listID is required")
 	}

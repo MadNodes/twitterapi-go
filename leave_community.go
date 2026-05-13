@@ -28,7 +28,7 @@ type leaveCommunityResponse struct {
 }
 
 // LeaveCommunity
-func (t *twitterApi) LeaveCommunity(communityID string) (string, string, error) {
+func (t *TwitterApi) LeaveCommunity(communityID string) (string, string, error) {
 	if communityID == "" {
 		return "", "", errors.New("communityID is empty")
 	}

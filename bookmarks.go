@@ -129,7 +129,7 @@ type BookmarksResponse struct {
 }
 
 // GetBookmarks
-func (t *twitterApi) GetBookmarks(count int, cursor *string) (*BookmarksResponse, error) {
+func (t *TwitterApi) GetBookmarks(count int, cursor *string) (*BookmarksResponse, error) {
 	if t.proxy == "" {
 		return nil, errors.New("proxy is empty, please set WithProxy")
 	}

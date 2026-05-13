@@ -17,7 +17,7 @@ var (
 	tweetFilterDomainURI   = oapiDomainURI + "/tweet_filter"
 )
 
-type twitterApi struct {
+type TwitterApi struct {
 	ctx    context.Context
 	cancel context.CancelFunc
 	wg     sync.WaitGroup
@@ -29,11 +29,11 @@ type twitterApi struct {
 	cookies Cookies
 }
 
-func New(xApiKey string, opts ...Option) *twitterApi {
+func New(xApiKey string, opts ...Option) *TwitterApi {
 
 	ctx, cancel := context.WithCancel(context.Background())
 
-	t := &twitterApi{
+	t := &TwitterApi{
 		ctx:    ctx,
 		cancel: cancel,
 
@@ -51,7 +51,7 @@ func New(xApiKey string, opts ...Option) *twitterApi {
 	return t
 }
 
-func (t *twitterApi) Close() {
+func (t *TwitterApi) Close() {
 	t.cancel()
 	t.wg.Wait()
 }

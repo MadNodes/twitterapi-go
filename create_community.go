@@ -28,7 +28,7 @@ type createCommunityResponse struct {
 }
 
 // CreateCommunity
-func (t *twitterApi) CreateCommunity(name, description string) (string, error) {
+func (t *TwitterApi) CreateCommunity(name, description string) (string, error) {
 	if name == "" {
 		return "", errors.New("name is empty")
 	}

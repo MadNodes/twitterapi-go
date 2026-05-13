@@ -47,7 +47,7 @@ type GetUserFollowingsResponse struct {
 	Code        int                      `json:"code"`
 }
 
-func (t *twitterApi) GetUserFollowings(userName string, pageSize *int, cursor *string) (*GetUserFollowingsResponse, error) {
+func (t *TwitterApi) GetUserFollowings(userName string, pageSize *int, cursor *string) (*GetUserFollowingsResponse, error) {
 	if strings.TrimSpace(userName) == "" {
 		return nil, errors.New("userName is required")
 	}

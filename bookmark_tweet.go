@@ -26,7 +26,7 @@ type bookmarkTweetResponse struct {
 }
 
 // BookmarkTweet
-func (t *twitterApi) BookmarkTweet(tweetID string) error {
+func (t *TwitterApi) BookmarkTweet(tweetID string) error {
 	if tweetID == "" {
 		return errors.New("tweetID is empty")
 	}

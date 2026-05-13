@@ -27,7 +27,7 @@ type addWebhookRuleResponse struct {
 }
 
 // AddWebhookRule
-func (t *twitterApi) AddWebhookRule(tag, value string, intervalSeconds float64) (string, error) {
+func (t *TwitterApi) AddWebhookRule(tag, value string, intervalSeconds float64) (string, error) {
 	if tag == "" {
 		return "", errors.New("tag is empty")
 	}

@@ -17,7 +17,7 @@ type GetMyInfoResponse struct {
 	TotalBonusCredits int `json:"total_bonus_credits"` // added: from live response
 }
 
-func (t *twitterApi) GetMyInfo() (*GetMyInfoResponse, error) {
+func (t *TwitterApi) GetMyInfo() (*GetMyInfoResponse, error) {
 	url := oapiDomainURI + "/my/info"
 
 	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*10)
