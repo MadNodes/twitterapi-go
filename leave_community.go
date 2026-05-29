@@ -52,7 +52,7 @@ func (t *TwitterApi) LeaveCommunity(communityID string) (string, string, error) 
 		return "", "", err
 	}
 
-	slog.Info("LeaveCommunity response", "jsonData", string(jsonData))
+	//slog.Info("LeaveCommunity response", "jsonData", string(jsonData))
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("LeaveCommunity failed", "statusCode", resp.StatusCode, "body", string(jsonData))
 		return "", "", errors.New("LeaveCommunity failed")

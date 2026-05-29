@@ -42,7 +42,7 @@ func (t *TwitterApi) GetWebhookRules() (*GetWebhookRulesResponse, error) {
 		return nil, err
 	}
 
-	slog.Info("GetWebhookRules response", "jsonData", string(jsonData))
+	//slog.Info("GetWebhookRules response", "jsonData", string(jsonData))
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("GetWebhookRules failed", "statusCode", resp.StatusCode, "body", string(jsonData))
 		return nil, errors.New("GetWebhookRules failed")

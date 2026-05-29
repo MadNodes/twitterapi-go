@@ -47,7 +47,7 @@ func (t *TwitterApi) GetUsersToMonitorTweet() (*GetUsersToMonitorTweetResponse, 
 		return nil, err
 	}
 
-	slog.Info("GetUsersToMonitorTweet response", "jsonData", string(jsonData))
+	//slog.Info("GetUsersToMonitorTweet response", "jsonData", string(jsonData))
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("GetUsersToMonitorTweet failed", "statusCode", resp.StatusCode, "body", string(jsonData))
 		return nil, errors.New("GetUsersToMonitorTweet failed")

@@ -56,7 +56,7 @@ func (t *TwitterApi) FollowUser(userID string) error {
 		return err
 	}
 
-	slog.Info("FollowUser response", "jsonData", string(jsonData))
+	//slog.Info("FollowUser response", "jsonData", string(jsonData))
 
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("FollowUser failed", "statusCode", resp.StatusCode, "body", string(jsonData))

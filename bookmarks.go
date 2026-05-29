@@ -170,7 +170,7 @@ func (t *TwitterApi) GetBookmarks(count int, cursor *string) (*BookmarksResponse
 		return nil, err
 	}
 
-	slog.Info("GetBookmarks response", "jsonData", string(jsonData))
+	//slog.Info("GetBookmarks response", "jsonData", string(jsonData))
 
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("GetBookmarks failed", "statusCode", resp.StatusCode, "body", string(jsonData))

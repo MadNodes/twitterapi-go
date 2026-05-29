@@ -57,7 +57,7 @@ func (t *TwitterApi) RetweetTweet(tweetID string) error {
 		return err
 	}
 
-	slog.Info("RetweetTweet response", "jsonData", string(jsonData))
+	//slog.Info("RetweetTweet response", "jsonData", string(jsonData))
 
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("RetweetTweet failed", "statusCode", resp.StatusCode, "body", string(jsonData))

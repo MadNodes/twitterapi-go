@@ -42,7 +42,7 @@ func (t *TwitterApi) AddUserToMonitorTweet(xUserName string) error {
 		return err
 	}
 
-	slog.Info("AddUserToMonitorTweet response", "jsonData", string(jsonData))
+	//slog.Info("AddUserToMonitorTweet response", "jsonData", string(jsonData))
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("AddUserToMonitorTweet failed", "statusCode", resp.StatusCode, "body", string(jsonData))
 		return errors.New("AddUserToMonitorTweet failed")

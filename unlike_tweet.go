@@ -57,7 +57,7 @@ func (t *TwitterApi) UnlikeTweet(tweetID string) error {
 		return err
 	}
 
-	slog.Info("UnlikeTweet response", "jsonData", string(jsonData))
+	//slog.Info("UnlikeTweet response", "jsonData", string(jsonData))
 
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("UnlikeTweet failed", "statusCode", resp.StatusCode, "body", string(jsonData))

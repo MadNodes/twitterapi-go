@@ -57,7 +57,7 @@ func (t *TwitterApi) UnbookmarkTweet(tweetID string) error {
 		return err
 	}
 
-	slog.Info("UnbookmarkTweet response", "jsonData", string(jsonData))
+	//slog.Info("UnbookmarkTweet response", "jsonData", string(jsonData))
 
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("UnbookmarkTweet failed", "statusCode", resp.StatusCode, "body", string(jsonData))

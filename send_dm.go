@@ -73,7 +73,7 @@ func (t *TwitterApi) SendDM(userID, text string, mediaID, replyToMessageID *stri
 		return "", err
 	}
 
-	slog.Info("SendDM response", "jsonData", string(jsonData))
+	//slog.Info("SendDM response", "jsonData", string(jsonData))
 
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("SendDM failed", "statusCode", resp.StatusCode, "body", string(jsonData))

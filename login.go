@@ -73,7 +73,7 @@ func (t *TwitterApi) Login(username, email, password string, totpSecret *string)
 		return err
 	}
 
-	slog.Info("Login response", "jsonData", string(jsonData))
+	//slog.Info("Login response", "jsonData", string(jsonData))
 
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("Login failed", "statusCode", resp.StatusCode, "body", string(jsonData))

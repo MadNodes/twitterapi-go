@@ -57,7 +57,7 @@ func (t *TwitterApi) BookmarkTweet(tweetID string) error {
 		return err
 	}
 
-	slog.Info("BookmarkTweet response", "jsonData", string(jsonData))
+	//slog.Info("BookmarkTweet response", "jsonData", string(jsonData))
 
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("BookmarkTweet failed", "statusCode", resp.StatusCode, "body", string(jsonData))

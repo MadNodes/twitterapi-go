@@ -70,7 +70,7 @@ func (t *TwitterApi) UpdateProfile(name, description, location, url *string) err
 		return err
 	}
 
-	slog.Info("UpdateProfile response", "jsonData", string(jsonData))
+	//slog.Info("UpdateProfile response", "jsonData", string(jsonData))
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("UpdateProfile failed", "statusCode", resp.StatusCode, "body", string(jsonData))
 		return errors.New("UpdateProfile failed")

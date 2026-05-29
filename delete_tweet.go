@@ -57,7 +57,7 @@ func (t *TwitterApi) DeleteTweet(tweetID string) error {
 		return err
 	}
 
-	slog.Info("DeleteTweet response", "jsonData", string(jsonData))
+	//slog.Info("DeleteTweet response", "jsonData", string(jsonData))
 
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("DeleteTweet failed", "statusCode", resp.StatusCode, "body", string(jsonData))

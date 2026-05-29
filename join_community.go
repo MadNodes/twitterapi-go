@@ -52,7 +52,7 @@ func (t *TwitterApi) JoinCommunity(communityID string) (string, string, error) {
 		return "", "", err
 	}
 
-	slog.Info("JoinCommunity response", "jsonData", string(jsonData))
+	//slog.Info("JoinCommunity response", "jsonData", string(jsonData))
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("JoinCommunity failed", "statusCode", resp.StatusCode, "body", string(jsonData))
 		return "", "", errors.New("JoinCommunity failed")

@@ -53,7 +53,7 @@ func (t *TwitterApi) AddWebhookRule(tag, value string, intervalSeconds float64) 
 		return "", err
 	}
 
-	slog.Info("AddWebhookRule response", "jsonData", string(jsonData))
+	//slog.Info("AddWebhookRule response", "jsonData", string(jsonData))
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("AddWebhookRule failed", "statusCode", resp.StatusCode, "body", string(jsonData))
 		return "", errors.New("AddWebhookRule failed")

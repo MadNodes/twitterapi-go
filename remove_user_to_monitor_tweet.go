@@ -42,7 +42,7 @@ func (t *TwitterApi) RemoveUserToMonitorTweet(idForUser string) error {
 		return err
 	}
 
-	slog.Info("RemoveUserToMonitorTweet response", "jsonData", string(jsonData))
+	//slog.Info("RemoveUserToMonitorTweet response", "jsonData", string(jsonData))
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("RemoveUserToMonitorTweet failed", "statusCode", resp.StatusCode, "body", string(jsonData))
 		return errors.New("RemoveUserToMonitorTweet failed")

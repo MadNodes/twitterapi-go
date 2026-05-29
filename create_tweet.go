@@ -78,13 +78,13 @@ func (t *TwitterApi) CreateTweet(text string, mediaIDs []string, replyToTweetID,
 
 	jsonData, _ := jsoniter.Marshal(request)
 
-	slog.Info("CreateTweet request", "jsonData", string(jsonData))
+	//slog.Info("CreateTweet request", "jsonData", string(jsonData))
 
 	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*5)
 	defer cancel1()
 	headers := maps.Clone(t.headers)
 	headers["Content-Type"] = "application/json"
-	slog.Info("CreateTweet request headers", "headers", headers)
+	//slog.Info("CreateTweet request headers", "headers", headers)
 
 	jsonData, resp, err := postDataWithHeader(ctx1, t.httpClient, twitterDomainURI+"/create_tweet_v2", bytes.NewReader(jsonData), headers)
 	if err != nil {
@@ -92,7 +92,7 @@ func (t *TwitterApi) CreateTweet(text string, mediaIDs []string, replyToTweetID,
 		return "", err
 	}
 
-	slog.Info("CreateTweet response", "jsonData", string(jsonData))
+	//slog.Info("CreateTweet response", "jsonData", string(jsonData))
 
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("CreateTweet failed", "statusCode", resp.StatusCode, "body", string(jsonData))

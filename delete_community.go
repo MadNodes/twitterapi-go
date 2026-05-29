@@ -59,7 +59,7 @@ func (t *TwitterApi) DeleteCommunity(communityID, communityName string) error {
 		return err
 	}
 
-	slog.Info("DeleteCommunity response", "jsonData", string(jsonData))
+	//slog.Info("DeleteCommunity response", "jsonData", string(jsonData))
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("DeleteCommunity failed", "statusCode", resp.StatusCode, "body", string(jsonData))
 		return errors.New("DeleteCommunity failed")

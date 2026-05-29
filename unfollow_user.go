@@ -57,7 +57,7 @@ func (t *TwitterApi) UnfollowUser(userID string) error {
 		return err
 	}
 
-	slog.Info("UnfollowUser response", "jsonData", string(jsonData))
+	//slog.Info("UnfollowUser response", "jsonData", string(jsonData))
 
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("UnfollowUser failed", "statusCode", resp.StatusCode, "body", string(jsonData))

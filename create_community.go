@@ -60,7 +60,7 @@ func (t *TwitterApi) CreateCommunity(name, description string) (string, error) {
 		return "", err
 	}
 
-	slog.Info("CreateCommunity response", "jsonData", string(jsonData))
+	//slog.Info("CreateCommunity response", "jsonData", string(jsonData))
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("CreateCommunity failed", "statusCode", resp.StatusCode, "body", string(jsonData))
 		return "", errors.New("CreateCommunity failed")
