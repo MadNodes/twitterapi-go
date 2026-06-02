@@ -5,6 +5,7 @@ package twitterapi
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
 	"net/http"
 	neturl "net/url"
@@ -140,7 +141,9 @@ type GetTweetByIDsResponse struct {
 	Code    int                   `json:"code"`
 }
 
-func (t *TwitterApi) GetTweetByIDs(tweetIDs []string) (*GetTweetByIDsResponse, error) {
+const maxTweetIDsPerRequest = 50
+
+func (t *TwitterApi) getTweetByIDsBatch(tweetIDs []string) (*GetTweetByIDsResponse, error) {
 	if len(tweetIDs) == 0 {
 		return nil, errors.New("tweet_ids is empty")
 	}
@@ -177,4 +180,46 @@ func (t *TwitterApi) GetTweetByIDs(tweetIDs []string) (*GetTweetByIDsResponse, e
 	}
 
 	return response, nil
+}
+
+func (t *TwitterApi) GetTweetByIDs(tweetIDs []string) (*GetTweetByIDsResponse, error) {
+	if len(tweetIDs) == 0 {
+		return nil, errors.New("tweet_ids is empty")
+	}
+
+	if len(tweetIDs) <= maxTweetIDsPerRequest {
+		return t.getTweetByIDsBatch(tweetIDs)
+	}
+
+	var allTweets []*GetTweetByIDsTweet
+	seen := make(map[string]bool)
+
+	for i := 0; i < len(tweetIDs); i += maxTweetIDsPerRequest {
+		end := i + maxTweetIDsPerRequest
+		if end > len(tweetIDs) {
+			end = len(tweetIDs)
+		}
+		batch := tweetIDs[i:end]
+
+		resp, err := t.getTweetByIDsBatch(batch)
+		if err != nil {
+			return nil, fmt.Errorf("batch [%d:%d) (%d ids) failed: %w", i, end, len(batch), err)
+		}
+
+		for _, tweet := range resp.Tweets {
+			if tweet == nil {
+				continue
+			}
+			if !seen[tweet.ID] {
+				seen[tweet.ID] = true
+				allTweets = append(allTweets, tweet)
+			}
+		}
+	}
+
+	return &GetTweetByIDsResponse{
+		Tweets: allTweets,
+		Status: "success",
+		Code:   200,
+	}, nil
 }
