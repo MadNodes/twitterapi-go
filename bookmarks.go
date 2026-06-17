@@ -162,10 +162,6 @@ func (t *TwitterApi) GetBookmarks(count int, cursor *string) (*BookmarksResponse
 	headers["Content-Type"] = "application/json"
 	jsonData, resp, err := postDataWithHeader(ctx1, t.httpClient, url, bytes.NewReader(jsonData), headers)
 	if err != nil {
-		if errors.Is(err, context.DeadlineExceeded) {
-			slog.Error("GetBookmarks request timed out", "url", url)
-			return nil, errors.New("GetBookmarks request timed out")
-		}
 		slog.Error("GetBookmarks failed", "err", err)
 		return nil, err
 	}

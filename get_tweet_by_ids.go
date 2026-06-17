@@ -10,7 +10,6 @@ import (
 	"net/http"
 	neturl "net/url"
 	"strings"
-	"time"
 
 	jsoniter "github.com/json-iterator/go"
 )
@@ -152,10 +151,7 @@ func (t *TwitterApi) getTweetByIDsBatch(tweetIDs []string) (*GetTweetByIDsRespon
 	vals.Set("tweet_ids", strings.Join(tweetIDs, ","))
 	url := tweetsTwitterDomainURI + "?" + vals.Encode()
 
-	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*10)
-	defer cancel1()
-
-	jsonData, resp, err := getDataWithHeader(ctx1, t.httpClient, url, t.headers)
+	jsonData, resp, err := t.getDataWithHeader(t.ctx, url, t.headers)
 	if err != nil {
 		if errors.Is(err, context.DeadlineExceeded) {
 			slog.Error("GetTweetByIDs request timed out", "url", url)

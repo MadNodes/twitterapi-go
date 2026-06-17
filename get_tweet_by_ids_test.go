@@ -248,10 +248,9 @@ func TestGetTweetByIDs_Batching(t *testing.T) {
 
 			mu.Lock()
 			batchIndex++
-			idx := batchIndex
 			mu.Unlock()
 
-			if idx == 2 {
+			if ids[0] == "id_51" {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}

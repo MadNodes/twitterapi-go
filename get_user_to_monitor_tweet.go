@@ -7,7 +7,6 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
-	"time"
 
 	jsoniter "github.com/json-iterator/go"
 )
@@ -34,10 +33,7 @@ type GetUsersToMonitorTweetResponse struct {
 func (t *TwitterApi) GetUsersToMonitorTweet() (*GetUsersToMonitorTweetResponse, error) {
 	url := streamDomainURI + "/get_user_to_monitor_tweet"
 
-	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*10)
-	defer cancel1()
-
-	jsonData, resp, err := getDataWithHeader(ctx1, t.httpClient, url, t.headers)
+	jsonData, resp, err := t.getDataWithHeader(t.ctx, url, t.headers)
 	if err != nil {
 		if errors.Is(err, context.DeadlineExceeded) {
 			slog.Error("GetUsersToMonitorTweet request timed out", "url", url)

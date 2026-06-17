@@ -1,6 +1,9 @@
 package twitterapi
 
-import "net/http"
+import (
+	"net/http"
+	"time"
+)
 
 type Option func(*TwitterApi)
 
@@ -25,5 +28,19 @@ func WithProxy(proxy string) Option {
 func WithCookies(cookies Cookies) Option {
 	return func(t *TwitterApi) {
 		t.cookies = cookies
+	}
+}
+
+func WithRequestTimeout(timeout time.Duration) Option {
+	return func(t *TwitterApi) {
+		if timeout > 0 {
+			t.requestTimeout = timeout
+		}
+	}
+}
+
+func WithRetryConfig(config RetryConfig) Option {
+	return func(t *TwitterApi) {
+		t.retryConfig = normalizeRetryConfig(config)
 	}
 }

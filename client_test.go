@@ -2,7 +2,6 @@ package twitterapi
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"errors"
 	"os"
@@ -39,9 +38,7 @@ func doGet(t *testing.T, client *TwitterApi, url string) ([]byte, int, error) {
 	if client == nil {
 		return nil, 0, errors.New("client is nil")
 	}
-	ctx, cancel := context.WithTimeout(client.ctx, 10*time.Second)
-	defer cancel()
-	jsonData, resp, err := getDataWithHeader(ctx, client.httpClient, url, client.headers)
+	jsonData, resp, err := client.getDataWithHeader(client.ctx, url, client.headers)
 	if err != nil {
 		return jsonData, 0, err
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"sync"
+	"time"
 )
 
 var (
@@ -25,6 +26,9 @@ type TwitterApi struct {
 	httpClient *http.Client
 	headers    map[string]string
 
+	requestTimeout time.Duration
+	retryConfig    RetryConfig
+
 	proxy   string
 	cookies Cookies
 }
@@ -39,6 +43,9 @@ func New(xApiKey string, opts ...Option) *TwitterApi {
 
 		httpClient: newHTTP(),
 		headers:    map[string]string{},
+
+		requestTimeout: 10 * time.Second,
+		retryConfig:    DefaultRetryConfig,
 	}
 
 	for _, opt := range opts {

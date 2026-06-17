@@ -9,7 +9,6 @@ import (
 	"net/http"
 	neturl "net/url"
 	"strings"
-	"time"
 
 	jsoniter "github.com/json-iterator/go"
 )
@@ -104,10 +103,7 @@ func (t *TwitterApi) GetUserAbout(userName *string) (*GetUserAboutResponse, erro
 	vals.Set("userName", *userName)
 	url := userTwitterDomainURI + "_about?" + vals.Encode()
 
-	ctx1, cancel1 := context.WithTimeout(t.ctx, time.Second*10)
-	defer cancel1()
-
-	jsonData, resp, err := getDataWithHeader(ctx1, t.httpClient, url, t.headers)
+	jsonData, resp, err := t.getDataWithHeader(t.ctx, url, t.headers)
 	if err != nil {
 		if errors.Is(err, context.DeadlineExceeded) {
 			slog.Error("GetUserAbout request timed out", "url", url)
