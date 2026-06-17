@@ -140,13 +140,28 @@ type GetTweetRepliesV2Response struct {
 	Message     string                    `json:"msg"` // fixed: was message
 }
 
+type GetTweetRepliesV2QueryType string
+
+const (
+	GetTweetRepliesV2QueryTypeRelevance GetTweetRepliesV2QueryType = "Relevance"
+	GetTweetRepliesV2QueryTypeLatest    GetTweetRepliesV2QueryType = "Latest"
+	GetTweetRepliesV2QueryTypeLikes     GetTweetRepliesV2QueryType = "Likes"
+)
+
 func (t *TwitterApi) GetTweetRepliesV2(tweetID string, cursor *string) (*GetTweetRepliesV2Response, error) {
+	return t.GetTweetRepliesV2WithQueryType(tweetID, "", cursor)
+}
+
+func (t *TwitterApi) GetTweetRepliesV2WithQueryType(tweetID string, queryType GetTweetRepliesV2QueryType, cursor *string) (*GetTweetRepliesV2Response, error) {
 	if strings.TrimSpace(tweetID) == "" {
 		return nil, errors.New("tweetID is required")
 	}
 
 	vals := neturl.Values{}
 	vals.Set("tweetId", tweetID)
+	if queryType != "" {
+		vals.Set("queryType", string(queryType))
+	}
 	if cursor != nil && *cursor != "" {
 		vals.Set("cursor", *cursor)
 	}

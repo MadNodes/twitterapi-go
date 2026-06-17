@@ -1,6 +1,8 @@
 package twitterapi
 
 import (
+	"net/http"
+	"net/http/httptest"
 	neturl "net/url"
 	"os"
 	"testing"
@@ -52,4 +54,61 @@ func TestGetTweetRepliesV2_Behavior(t *testing.T) {
 			t.Fatal("expected non-nil response")
 		}
 	})
+}
+
+func TestGetTweetRepliesV2WithQueryType_BuildsQuery(t *testing.T) {
+	var gotQuery neturl.Values
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gotQuery = r.URL.Query()
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"tweets":[],"has_next_page":false,"next_cursor":"","status":"success","msg":""}`))
+	}))
+	t.Cleanup(srv.Close)
+
+	origURL := twitterDomainURI
+	twitterDomainURI = srv.URL
+	t.Cleanup(func() { twitterDomainURI = origURL })
+
+	cursor := "cursor-1"
+	client := New("test-key", WithHttpClient(srv.Client()))
+	_, err := client.GetTweetRepliesV2WithQueryType("tweet-1", GetTweetRepliesV2QueryTypeLatest, &cursor)
+	if err != nil {
+		t.Fatalf("GetTweetRepliesV2WithQueryType returned error: %v", err)
+	}
+
+	if gotQuery.Get("tweetId") != "tweet-1" {
+		t.Fatalf("expected tweetId tweet-1, got %q", gotQuery.Get("tweetId"))
+	}
+	if gotQuery.Get("queryType") != string(GetTweetRepliesV2QueryTypeLatest) {
+		t.Fatalf("expected queryType Latest, got %q", gotQuery.Get("queryType"))
+	}
+	if gotQuery.Get("cursor") != cursor {
+		t.Fatalf("expected cursor %q, got %q", cursor, gotQuery.Get("cursor"))
+	}
+}
+
+func TestGetTweetRepliesV2_OmitsDefaultQueryType(t *testing.T) {
+	var gotQuery neturl.Values
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gotQuery = r.URL.Query()
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"tweets":[],"has_next_page":false,"next_cursor":"","status":"success","msg":""}`))
+	}))
+	t.Cleanup(srv.Close)
+
+	origURL := twitterDomainURI
+	twitterDomainURI = srv.URL
+	t.Cleanup(func() { twitterDomainURI = origURL })
+
+	client := New("test-key", WithHttpClient(srv.Client()))
+	_, err := client.GetTweetRepliesV2("tweet-1", nil)
+	if err != nil {
+		t.Fatalf("GetTweetRepliesV2 returned error: %v", err)
+	}
+
+	if gotQuery.Get("queryType") != "" {
+		t.Fatalf("expected queryType to be omitted, got %q", gotQuery.Get("queryType"))
+	}
 }
